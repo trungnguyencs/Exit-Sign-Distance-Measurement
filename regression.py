@@ -27,21 +27,14 @@ class Parallelogram(object):
     angle2 = np.arctan2(p2.y - p1.y, p2.x - p1.x)
     return abs(angle1 - angle2)
 
-def read_data(file):
+# def read_data(file):
   
-  parallelogram_arr = []
-  for i in range(len(data)):
-    id = data[i]['External ID']
-    pts = data[i]['Label']['EXIT_sign'][0]['geometry']
-    print(id)
-    print(pts)
-
-def retrieve_img(data, folder):
-  for i in range(len(data)):
-    id = data[i]['External ID']
-    urllib.urlretrieve("http://www.gunnerkrigg.com//comics/00000001.jpg", folder + id)
+#   parallelogram_arr = []
+#   for i in range(len(data)):
+#     id = data[i]['External ID']
+#     pts = data[i]['Label']['EXIT_sign'][0]['geometry']
+#     print(id)
+#     print(pts)
 
 with open('quadrilateral-1807.json') as f:
   data = json.load(f)
-
-retrieve_img(data, './imgs/')
