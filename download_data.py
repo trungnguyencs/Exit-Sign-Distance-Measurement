@@ -1,24 +1,41 @@
 import json
-import urllib
+from urllib import urlretrieve
+# from urllib.request import urlretrieve
+from multiprocessing.dummy import Pool as ThreadPool
 
-def retrieve_imgs(data, folder):
+IMG_PATH = './data/imgs/'
+LABEL_PATH = './data/labels/'
+
+def get_list(data):
+  success, failed = [], []
   for i in range(len(data)):
     id = data[i]['External ID']
-    url = data[i]['Labeled Data']
-    print(id)
-    urllib.urlretrieve(url, folder + id)
-
-def retrieve_labels(data, img_path, label_path):
-  for i in range(len(data)):
+    img_url = data[i]['Labeled Data']
     try:
-      id = data[i]['External ID']
-      url = data[i]['Masks']['EXIT_sign']
-      print(str(i) + id)
-      urllib.urlretrieve(url, folder + id)
-      urllib.urlretrieve(url, folder + id)
+      label_url = data[i]['Masks']['EXIT_sign']
+      success.append((id, img_url, label_url))
     except:
-      continue
+      failed.append((id, img_url))
+  return success, failed
+
+def get_url(id, img_url, label_url):
+  urlretrieve(img_url, IMG_PATH + id)
+  urlretrieve(label_url, LABEL_PATH + id)
 
 with open('quadrilateral-1807.json') as f:
   data = json.load(f)
-retrieve_labels(data, './data/imgs/', './data/labels/')
+success, failed = get_list(data)
+
+print(len(success))
+print(len(failed))
+
+count = 0
+for i in range(0, len(success)):
+  (id, img_url, label_url) = success[i]
+  print(str(count) + ' ' + id)
+  get_url(id, img_url, label_url)
+  count += 1
+
+# pool = ThreadPool(100)
+# results = pool.starmap(get_url, zip(success.values(), success.keys()))
+
