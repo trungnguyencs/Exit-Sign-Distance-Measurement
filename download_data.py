@@ -5,15 +5,20 @@ def retrieve_imgs(data, folder):
   for i in range(len(data)):
     id = data[i]['External ID']
     url = data[i]['Labeled Data']
+    print(id)
     urllib.urlretrieve(url, folder + id)
 
-def retrieve_labels(data, folder):
+def retrieve_labels(data, img_path, label_path):
   for i in range(len(data)):
-    id = data[i]['External ID']
-    url = data[i]['Masks']['EXIT_sign']
-    urllib.urlretrieve(url, folder + id)
+    try:
+      id = data[i]['External ID']
+      url = data[i]['Masks']['EXIT_sign']
+      print(str(i) + id)
+      urllib.urlretrieve(url, folder + id)
+      urllib.urlretrieve(url, folder + id)
+    except:
+      continue
 
 with open('quadrilateral-1807.json') as f:
   data = json.load(f)
-retrieve_imgs(data, './data/imgs/')
-retrieve_labels(data, './data/labels/')
+retrieve_labels(data, './data/imgs/', './data/labels/')
