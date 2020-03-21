@@ -1,7 +1,7 @@
 import json
+from multiprocessing.dummy import Pool as ThreadPool
 from urllib import urlretrieve
 # from urllib.request import urlretrieve
-from multiprocessing.dummy import Pool as ThreadPool
 
 IMG_PATH = './data/imgs/'
 LABEL_PATH = './data/labels/'
@@ -29,12 +29,10 @@ success, failed = get_list(data)
 print(len(success))
 print(len(failed))
 
-count = 0
 for i in range(0, len(success)):
   (id, img_url, label_url) = success[i]
-  print(str(count) + ' ' + id)
   get_url(id, img_url, label_url)
-  count += 1
+  print(str(i) + ' ' + id)
 
 # pool = ThreadPool(100)
 # results = pool.starmap(get_url, zip(success.values(), success.keys()))
