@@ -2,6 +2,9 @@
 import json
 import numpy as np
 
+JSON_INPUT = 'quadrilateral-1807.json'
+JSON_OUTPUT = 'parallelogram-1787.json'
+
 class Point(object):
   def __init__(self, x, y):
     self.x = x
@@ -41,7 +44,12 @@ def create_parallelograms(data):
       continue
   return parallelogram_arr
 
-with open('quadrilateral-1807.json') as f:
+def arr_to_json_file(arr, json_file_name):
+  with open(json_file_name, "w") as outfile: 
+    json_obj = json.dumps(arr, default=lambda x: x.__dict__, indent=4, sort_keys=True)
+    outfile.write(json_obj)
+
+with open(JSON_INPUT) as f:
   data = json.load(f)
 parallelogram_arr = create_parallelograms(data)
-print(len(parallelogram_arr))
+arr_to_json_file(parallelogram_arr, JSON_OUTPUT)
