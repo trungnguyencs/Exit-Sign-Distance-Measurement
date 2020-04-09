@@ -7,7 +7,8 @@ IMG_WIDTH_PX = 360
 SENSOR_WIDTH_MM = 3.5
 F_MM = 28
 F_PX = F_MM * IMG_WIDTH_PX / SENSOR_WIDTH_MM
-OBJ_WIDTH_M = 12 * 2.54 / 100
+F_PX = 536
+OBJ_WIDTH_M = 0.32
 
 JSON_INPUT = 'quadrilateral-1807.json'
 JSON_OUTPUT = 'parallelogram-1787.json'
@@ -44,7 +45,6 @@ def create_parallelograms(data):
   for i in range(len(data)):
     id = data[i]['External ID']
     url = data[i]['Labeled Data']
-    print(url)
     try:
       pts = data[i]['Label']['EXIT_sign'][0]['geometry']
       p1 = Point(pts[0]['x'], pts[0]['y'])
@@ -75,11 +75,11 @@ distance_meter = [obj.distance_meter for obj in parallelogram_arr]
 # plot_distance_meter_histogram(distance_meter)
 min_distance, max_distance = min(distance_meter), max(distance_meter)
 for obj in parallelogram_arr:
-  if abs(obj.distance_meter - min_distance) <= 0.0001:
+  if obj.distance_meter == min_distance:
     print('Min: ' + str(obj.distance_meter))
     print(obj.id)
     print(obj.url)
-  if abs(obj.distance_meter - max_distance) <= 0.0001:
+  if obj.distance_meter == max_distance:
     print('Max: ' + str(obj.distance_meter))
     print(obj.id)
     print(obj.url)
