@@ -1,14 +1,16 @@
-
 import json
 import numpy as np
 from matplotlib import pyplot as plt
 
-IMG_WIDTH_PX = 360
-SENSOR_WIDTH_MM = 3.5
-F_MM = 28
-F_PX = F_MM * IMG_WIDTH_PX / SENSOR_WIDTH_MM
+# SENSOR_WIDTH_MM = 3.5
+# F_MM = 28
+# F_PX = F_MM * IMG_WIDTH_PX / SENSOR_WIDTH_MM
+IMG_WIDTH_PX = 640
+IMG_HEIGHT_PX = 360
 F_PX = 536
 OBJ_WIDTH_M = 0.32
+OBJ_HEIGHT_M = 0.20
+DEFAULT_VERTICES = [(0,360),(640,360),(640,0),(0,0)]
 
 JSON_INPUT = 'quadrilateral-1807.json'
 JSON_OUTPUT = 'parallelogram-1787.json'
@@ -21,23 +23,23 @@ class Point(object):
 class Parallelogram(object):
   def __init__(self, id, url, p1, p2, p3, p4):
     """
-    A quadrilateral is defined by two lines: p2p1 and p2p3
+    A quadrilateral is defined by two lines: DC and DA
     """
     self.id = id
     self.url = url
-    self.p1, self.p2, self.p3, self.p4 = p1, p2, p3, p4
-    self.long_edge = self.find_len(p1, p2)
-    self.short_edge = self.find_len(p1, p3)
-    self.angle = self.find_angle(p1, p2, p3)
+    self.D, self.C, self.B, self.A = p1, p2, p3, p4
+    self.long_edge = self.find_len(self.D, self.C)
+    self.short_edge = self.find_len(self.D, self.A)
+    self.angle = self.find_angle(self.A, self.D, self.C)
 
     self.distance_meter = OBJ_WIDTH_M * F_PX / self.long_edge
     
   def find_len(self, p1, p2):
     return ((p1.x - p2.x)**2 + (p1.y - p2.y)**2)**0.5
 
-  def find_angle(self, p1, p2, p3):
-    angle1 = np.arctan2(p3.y - p2.y, p3.x - p2.x)
-    angle2 = np.arctan2(p1.y - p2.y, p1.x - p2.x)
+  def find_angle(self, A, D, C):
+    angle1 = np.arctan2(A.y - D.y, A.x - D.x)
+    angle2 = np.arctan2(C.y - D.y, C.x - D.x)
     return abs(angle1 - angle2)
 
 def create_parallelograms(data):
@@ -67,21 +69,33 @@ def plot_distance_meter_histogram(distance_meter):
   plt.title('Histogram of distances calculated by pinhole model')
   plt.show()
 
+def find_pinhole_distance(parallelogram_arr):
+  distance_meter = [obj.distance_meter for obj in parallelogram_arr]
+  min_distance, max_distance = min(distance_meter), max(distance_meter)
+  for obj in parallelogram_arr:
+    if obj.distance_meter == min_distance:
+      print('Min: ' + str(obj.distance_meter))
+      print(obj.id)
+      print(obj.url)
+    if obj.distance_meter == max_distance:
+      print('Max: ' + str(obj.distance_meter))
+      print(obj.id)
+      print(obj.url)
+  return distance_meter
+
+def print_point(pt):
+  print(str(pt.D.x) + ' ' + str(pt.D.y) + ' | ' \
+  + str(pt.C.x) + ' ' + str(pt.C.y) + ' | ' \
+  + str(pt.B.x) + ' ' + str(pt.B.y) + ' | ' \
+  + str(pt.A.x) + ' ' + str(pt.A.y))
+
 with open(JSON_INPUT) as f:
   data = json.load(f)
 parallelogram_arr = create_parallelograms(data)
 # arr_to_json_file(parallelogram_arr, JSON_OUTPUT)
-distance_meter = [obj.distance_meter for obj in parallelogram_arr]
+distance_meter = find_pinhole_distance(parallelogram_arr)
 # plot_distance_meter_histogram(distance_meter)
-min_distance, max_distance = min(distance_meter), max(distance_meter)
-for obj in parallelogram_arr:
-  if obj.distance_meter == min_distance:
-    print('Min: ' + str(obj.distance_meter))
-    print(obj.id)
-    print(obj.url)
-  if obj.distance_meter == max_distance:
-    print('Max: ' + str(obj.distance_meter))
-    print(obj.id)
-    print(obj.url)
+# for pt in parallelogram_arr:
+#   print_point(pt)
 
 
