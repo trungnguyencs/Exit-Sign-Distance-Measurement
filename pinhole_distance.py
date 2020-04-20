@@ -1,6 +1,7 @@
 import json
 import numpy as np
 from matplotlib import pyplot as plt
+import cv2
 
 # SENSOR_WIDTH_MM = 3.5
 # F_MM = 28
@@ -11,6 +12,9 @@ F_PX = 536
 OBJ_WIDTH_M = 0.32
 OBJ_HEIGHT_M = 0.20
 DEFAULT_VERTICES = [(0,360),(640,360),(640,0),(0,0)]
+K = np.array([[536, 0  , 320], \
+              [0,   532, 180], \
+              [0,   0,   1  ]])
 
 JSON_INPUT = 'quadrilateral-1807.json'
 JSON_OUTPUT = 'parallelogram-1787.json'
@@ -23,7 +27,7 @@ class Point(object):
 class Parallelogram(object):
   def __init__(self, id, url, p1, p2, p3, p4):
     """
-    A quadrilateral is defined by two lines: DC and DA
+    A parallelogram is defined by two lines: DC and DA
     """
     self.id = id
     self.url = url
@@ -63,12 +67,6 @@ def arr_to_json_file(arr, json_file_name):
     json_obj = json.dumps(arr, default=lambda x: x.__dict__, indent=4, sort_keys=True)
     outfile.write(json_obj)
 
-def plot_distance_meter_histogram(distance_meter):
-  plt.hist(distance_meter, rwidth=0.8, bins=50) 
-  plt.xlabel('Distance (in meter)')
-  plt.title('Histogram of distances calculated by pinhole model')
-  plt.show()
-
 def find_pinhole_distance(parallelogram_arr):
   distance_meter = [obj.distance_meter for obj in parallelogram_arr]
   min_distance, max_distance = min(distance_meter), max(distance_meter)
@@ -83,19 +81,47 @@ def find_pinhole_distance(parallelogram_arr):
       print(obj.url)
   return distance_meter
 
+def plot_distance_meter_histogram(distance_meter):
+  plt.hist(distance_meter, rwidth=0.8, bins=50) 
+  plt.xlabel('Distance (in meter)')
+  plt.title('Histogram of distances calculated by pinhole model')
+  plt.show()
+
+with open(JSON_INPUT) as f:
+  data = json.load(f)
+parallelogram_arr = create_parallelograms(data)
+# arr_to_json_file(parallelogram_arr, JSON_OUTPUT)
+# distance_meter = find_pinhole_distance(parallelogram_arr)
+# plot_distance_meter_histogram(distance_meter)
+
 def print_point(pt):
   print(str(pt.D.x) + ' ' + str(pt.D.y) + ' | ' \
   + str(pt.C.x) + ' ' + str(pt.C.y) + ' | ' \
   + str(pt.B.x) + ' ' + str(pt.B.y) + ' | ' \
   + str(pt.A.x) + ' ' + str(pt.A.y))
 
-with open(JSON_INPUT) as f:
-  data = json.load(f)
-parallelogram_arr = create_parallelograms(data)
-# arr_to_json_file(parallelogram_arr, JSON_OUTPUT)
-distance_meter = find_pinhole_distance(parallelogram_arr)
-# plot_distance_meter_histogram(distance_meter)
 # for pt in parallelogram_arr:
 #   print_point(pt)
 
+def find_homography(pts_src, pts_dst):
+  pts_src = np.array(pts_src)
+  pts_dst = np.array(pts_dst)
+  H, status = cv2.findHomography(pts_src, pts_dst)
+  return (H, status)
+
+def find_R_t(H, K):
+  num, Rs, Ts, Ns  = cv2.decomposeHomographyMat(H, K)
+  return (num, Rs, Ts, Ns)
+
+pt = parallelogram_arr[0]
+pts_src = [(pt.D.x, pt.D.y), (pt.C.x, pt.C.y), (pt.B.x, pt.B.y), (pt.A.x, pt.A.y)]
+H, status = find_homography(pts_src, DEFAULT_VERTICES)
+print('H: '); print(H)
+print('Status: '); print(status)
+print('---------------------------------------------------')
+num, Rs, Ts, Ns = cv2.decomposeHomographyMat(H, K)
+print('num: '); print(num)
+print('Rs: '); print(Rs)
+print('Ts: '); print(Ts)
+print('Ns: '); print(Ns)
 
