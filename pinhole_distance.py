@@ -6,15 +6,18 @@ import cv2
 # SENSOR_WIDTH_MM = 3.5
 # F_MM = 28
 # F_PX = F_MM * IMG_WIDTH_PX / SENSOR_WIDTH_MM
-IMG_WIDTH_PX = 640
-IMG_HEIGHT_PX = 360
+IMG_WIDTH_PX = 360
+IMG_HEIGHT_PX = 640
 F_PX = 536
-OBJ_WIDTH_M = 0.32
-OBJ_HEIGHT_M = 0.20
-DEFAULT_VERTICES = [(0,360),(640,360),(640,0),(0,0)]
-K = np.array([[536, 0  , 320], \
-              [0,   532, 180], \
-              [0,   0,   1  ]])
+OBJ_WIDTH = 0.32 #in meters
+OBJ_HEIGHT = 0.20
+DEFAULT_VERTICES = [(0,OBJ_HEIGHT),(OBJ_WIDTH,OBJ_HEIGHT),(OBJ_WIDTH,0),(0,0)]
+# DEFAULT_VERTICES = [(-OBJ_WIDTH/2,OBJ_HEIGHT/2),(OBJ_WIDTH/2,OBJ_HEIGHT/2),\
+#                     (OBJ_WIDTH/2,-OBJ_HEIGHT/2),(-OBJ_WIDTH/2,-OBJ_HEIGHT/2)]
+
+K = np.array([[536, 0  , 180], \
+              [0,   536, 320], \
+              [0,   0,   1  ]], dtype=np.float32)
 
 JSON_INPUT = 'quadrilateral-1807.json'
 JSON_OUTPUT = 'parallelogram-1787.json'
@@ -36,7 +39,7 @@ class Parallelogram(object):
     self.short_edge = self.find_len(self.D, self.A)
     self.angle = self.find_angle(self.A, self.D, self.C)
 
-    self.distance_meter = OBJ_WIDTH_M * F_PX / self.long_edge
+    self.distance_meter = OBJ_WIDTH * F_PX / self.long_edge
     
   def find_len(self, p1, p2):
     return ((p1.x - p2.x)**2 + (p1.y - p2.y)**2)**0.5
@@ -104,20 +107,23 @@ def print_point(pt):
 #   print_point(pt)
 
 def find_homography(pts_src, pts_dst):
-  pts_src = np.array(pts_src)
-  pts_dst = np.array(pts_dst)
-  H, status = cv2.findHomography(pts_src, pts_dst)
-  return (H, status)
+  pts_src = np.array(pts_src, dtype=np.float32)
+  pts_dst = np.array(pts_dst, dtype=np.float32)
+  print(pts_src)
+  print(pts_dst)
+  # H, status = cv2.findHomography(pts_src, pts_dst)
+  H = cv2.getPerspectiveTransform(pts_src, pts_dst)
+  return H
 
 def find_R_t(H, K):
   num, Rs, Ts, Ns  = cv2.decomposeHomographyMat(H, K)
   return (num, Rs, Ts, Ns)
 
-pt = parallelogram_arr[0]
-pts_src = [(pt.D.x, pt.D.y), (pt.C.x, pt.C.y), (pt.B.x, pt.B.y), (pt.A.x, pt.A.y)]
-H, status = find_homography(pts_src, DEFAULT_VERTICES)
+pt = parallelogram_arr[-1]
+print(pt.url)
+pts_src = [(pt.A.x, pt.A.y), (pt.B.x, pt.B.y), (pt.C.x, pt.C.y), (pt.D.x, pt.D.y)]
+H = find_homography(pts_src, DEFAULT_VERTICES)
 print('H: '); print(H)
-print('Status: '); print(status)
 print('---------------------------------------------------')
 num, Rs, Ts, Ns = cv2.decomposeHomographyMat(H, K)
 print('num: '); print(num)
