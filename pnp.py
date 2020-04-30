@@ -37,4 +37,4 @@ class PNP(object):
     Project the 3D exit sign coodinates to 2D given the computed Extrinsic vectors
     """
     pts_2D, jacobian = cv2.projectPoints(DEFAULT_PTS_3D, np.array(R_vec), np.array(T_vec), K, DIST_COEFFS)
-    return pts_2D
+    return np.reshape(pts_2D, (-1,2))
