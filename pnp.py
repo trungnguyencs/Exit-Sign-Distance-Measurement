@@ -13,7 +13,7 @@ DIST_COEFFS = np.array([0, 0, 0, 0], dtype=np.float32)
 class PNP(object):
   def find_R_t(self, pts_2D):
     """
-    Find R matrix and T vector from input 2D image points using PNP algorithm
+    Find R vector and T vector from input 2D image points using PNP algorithm
     """
     pts_2D = np.array(pts_2D, dtype=np.float32)
     # H, status = cv2.findHomography(pts_2D, pts_3D)
