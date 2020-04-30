@@ -9,15 +9,19 @@ import cv2
 IMG_WIDTH_PX = 360
 IMG_HEIGHT_PX = 640
 F_PX = 536
-OBJ_WIDTH = 0.32 #in meters
-OBJ_HEIGHT = 0.20
-DEFAULT_VERTICES = [(0,OBJ_HEIGHT),(OBJ_WIDTH,OBJ_HEIGHT),(OBJ_WIDTH,0),(0,0)]
+OBJ_WIDTH = 0.320 #in meters
+OBJ_HEIGHT = 0.200
+DEFAULT_PTS_3D = np.array([[0,         OBJ_HEIGHT, 0], \
+                           [OBJ_WIDTH, OBJ_HEIGHT, 0], \
+                           [OBJ_WIDTH, 0,          0], \
+                           [0,         0,          0]], dtype=np.float32)
 # DEFAULT_VERTICES = [(-OBJ_WIDTH/2,OBJ_HEIGHT/2),(OBJ_WIDTH/2,OBJ_HEIGHT/2),\
 #                     (OBJ_WIDTH/2,-OBJ_HEIGHT/2),(-OBJ_WIDTH/2,-OBJ_HEIGHT/2)]
 
 K = np.array([[536, 0  , 180], \
               [0,   536, 320], \
               [0,   0,   1  ]], dtype=np.float32)
+DIST_COEFFS = np.array([0, 0, 0, 0], dtype=np.float32)
 
 JSON_INPUT = 'quadrilateral-1807.json'
 JSON_OUTPUT = 'parallelogram-1787.json'
@@ -106,28 +110,28 @@ def print_point(pt):
 # for pt in parallelogram_arr:
 #   print_point(pt)
 
-def find_homography(pts_src, pts_dst):
-  pts_src = np.array(pts_src, dtype=np.float32)
-  pts_dst = np.array(pts_dst, dtype=np.float32)
-  print(pts_src)
-  print(pts_dst)
-  # H, status = cv2.findHomography(pts_src, pts_dst)
-  H = cv2.getPerspectiveTransform(pts_src, pts_dst)
-  return H
+def find_R_t(pts_3D, pts_2D, K, DIST_COEFFS):
+  pts_2D = np.array(pts_2D, dtype=np.float32)
+  print(pts_2D)
+  print(pts_3D)
+  # H, status = cv2.findHomography(pts_2D, pts_3D)
+  # H = cv2.getPerspectiveTransform(pts_2D, pts_3D)
+  # num, Rs, Ts, Ns  = cv2.decomposeHomographyMat(H, K)
 
-def find_R_t(H, K):
-  num, Rs, Ts, Ns  = cv2.decomposeHomographyMat(H, K)
-  return (num, Rs, Ts, Ns)
+  # Solve PNP docs: 
+  # https://docs.opencv.org/3.0-beta/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#solvepnp
+  ret, R_vec, T_vec = cv2.solvePnP(pts_3D, pts_2D, K, DIST_COEFFS)
+  return R_vec, T_vec
 
 pt = parallelogram_arr[-1]
 print(pt.url)
-pts_src = [(pt.A.x, pt.A.y), (pt.B.x, pt.B.y), (pt.C.x, pt.C.y), (pt.D.x, pt.D.y)]
-H = find_homography(pts_src, DEFAULT_VERTICES)
-print('H: '); print(H)
-print('---------------------------------------------------')
-num, Rs, Ts, Ns = cv2.decomposeHomographyMat(H, K)
-print('num: '); print(num)
-print('Rs: '); print(Rs)
-print('Ts: '); print(Ts)
-print('Ns: '); print(Ns)
+pts_2D = [(pt.A.x, pt.A.y), (pt.B.x, pt.B.y), (pt.C.x, pt.C.y), (pt.D.x, pt.D.y)]
+# H = find_homography(pts_2D, DEFAULT_VERTICES)
+# num, Rs, Ts, Ns = cv2.decomposeHomographyMat(H, K)
+R_vec, T_vec = find_R_t(DEFAULT_PTS_3D, pts_2D, K, DIST_COEFFS)
+print('R_vec: '); print(R_vec)
+# Convert to R_mat:
+R_mat, _ = cv2.Rodrigues(R_vec)
+print('R_mat: '); print(R_mat)
+print('T_vec: '); print(T_vec)
 
