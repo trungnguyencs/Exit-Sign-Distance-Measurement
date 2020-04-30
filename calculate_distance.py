@@ -11,37 +11,35 @@ IMG_HEIGHT_PX = 640
 F_PX = 536
 OBJ_WIDTH = 0.320 #in meters
 
-JSON_INPUT = 'quadrilateral-1807.json'
-JSON_OUTPUT = 'parallelogram-1787.json'
+JSON_INPUT = 'quadrilateral-raw-1807.json'
+JSON_OUTPUT = 'quadrilateral-distance-1787.json'
 
 class Point(object):
   def __init__(self, x, y):
     self.x = x
     self.y = y
 
-class Parallelogram(object):
+class Quadrilateral(object):
   def __init__(self, id, url, pts):
     """
-    A parallelogram is defined by 4 points:
+    A quadrilateral is defined by 4 points:
     - A: upper left
     - B: upper right
     - C: lower right
     - D: lower left
+    vertices_2D: [A,B,C,D]
     url: url to download the original image
     """
     (A, B, C, D) = pts
     self.id = id
     self.url = url
-    self.A, self.B, self.C, self.D = A, B, C, D
+    self.vertices_2D = [(A.x, A.y),(B.x,B.y),(C.x,C.y),(D.x,D.y)]
     # self.angle = self.find_angle(A, B, D)
     self.pinhole_distance = self.find_pinhole_distance(A, B, C, D)
-    self.homography_distance = self.find_homography_distance(A, B, C, D)
 
-  def print_parallelogram(self):
-    print(str(self.A.x) + ' ' + str(self.A.y) + ' | ' \
-          + str(self.B.x) + ' ' + str(self.B.y) + ' | ' \
-          + str(self.C.x) + ' ' + str(self.C.y) + ' | ' \
-          + str(self.D.x) + ' ' + str(self.D.y))
+    self.R_vec, self.T_vec = self.find_R_t(self.vertices_2D)
+    self.homography_distance = self.find_homography_distance(self.T_vec)
+    self.projected_vertices_2D = self.project_2D(self.R_vec, self.T_vec)
 
   def find_angle(self, A, B, D):
     """
@@ -59,24 +57,36 @@ class Parallelogram(object):
     long_edge = ((A.x - B.x)**2 + (A.y - B.y)**2)**0.5
     return OBJ_WIDTH * F_PX / long_edge
 
-  def find_homography_distance(self, A, B, C, D):
+  def find_R_t(self, vertices_2D):
+    """
+    Calculate R_vec and T_vec by PNP method - check file pnp.py
+    """
+    pnp = PNP()
+    R_vec, T_vec = pnp.find_R_t(vertices_2D)
+    return R_vec.tolist(), T_vec.tolist()
+
+  def find_homography_distance(self, T_vec):
     """
     Calculate the distance to the exit sign as the magnitude of the traslational T_vector
-    This vector is found by using PNP method (correspondence between an array of points
-    in 3D and an array of corresponding points in the image) - check file pnp.py
     """
-    pts_2D = [(A.x, A.y), (B.x, B.y), (C.x, C.y), (D.x, D.y)]
     pnp = PNP()
-    R_mat, T_vec = pnp.find_R_t(pts_2D)
     homography_distance = pnp.calculate_distance_from_T(T_vec)
-    return homography_distance
+    return np.asscalar(homography_distance)
+
+  def project_2D(self, R_vec, T_vec):
+    """
+    Project the 3D exit sign coodinates back to 2D given the computed Extrinsic vectors
+    """
+    pnp = PNP()
+    projected_vertices_2D = pnp.project_to_2D(R_vec, T_vec)
+    return projected_vertices_2D.tolist()
 
 class Processing(object):
-  def create_parallelogram_arr(self, data):
+  def create_quadrilateral_arr(self, data):
     """
-    Create an array of Parallelogram objects from the input data json object
+    Create an array of quadrilateral objects from the input data json object
     """
-    parallelogram_arr = []
+    quadrilateral_arr = []
     for i in range(len(data)):
       id = data[i]['External ID']
       url = data[i]['Labeled Data']
@@ -87,14 +97,14 @@ class Processing(object):
         p3 = Point(pts[2]['x'], pts[2]['y'])
         p4 = Point(pts[3]['x'], pts[3]['y'])
         pts = self.rearrange_pts(p1, p2, p3, p4)     # Rearrange the point in A B C D order
-        parallelogram_arr.append(Parallelogram(id, url, pts))
+        quadrilateral_arr.append(Quadrilateral(id, url, pts))
       except:
         continue
-    return parallelogram_arr
+    return quadrilateral_arr
 
   def rearrange_pts(self, p1, p2, p3, p4):
     """
-    From 4 corner points, put them in A B C D order of a parallelogram
+    From 4 corner points, put them in A B C D order of a quadrilateral
     """
     arr = [p1, p2, p3, p4]
     arr.sort(key=lambda p: (p.x, p.y))
@@ -105,15 +115,15 @@ class Processing(object):
 
   def write_to_json(self, arr, json_file_name):
     """
-    Write the parallelogram array to a json output file
+    Write the quadrilateral array to a json output file
     """
     with open(json_file_name, "w") as outfile: 
       json_obj = json.dumps(arr, default=lambda x: x.__dict__, indent=4, sort_keys=True)
       outfile.write(json_obj)
 
-  def find_distance_stats(self, parallelogram_arr, distance_arr, model):
+  def find_distance_stats(self, quadrilateral_arr, distance_arr, model):
     min_distance, max_distance = min(distance_arr), max(distance_arr)
-    for obj in parallelogram_arr:
+    for obj in quadrilateral_arr:
       if model == 'pinhole':
         if obj.pinhole_distance == min_distance:
           print('Min pinhole distance: ' + str(obj.pinhole_distance))
@@ -141,41 +151,40 @@ class Processing(object):
     plt.title('Histogram of distances')
     plt.show()
 
-  def print_an_example(self, parallelogram):
+  def print_an_example(self, quadrilateral):
     """
-    Printing the processing results for parallelogram index i
+    Printing the processing results for quadrilateral index i
     """
     print("2D coordinates of the testing point: ")
-    parallelogram.print_parallelogram()
-    pts_2D = [(parallelogram.A.x, parallelogram.A.y), (parallelogram.B.x, parallelogram.B.y),\
-              (parallelogram.C.x, parallelogram.C.y), (parallelogram.D.x, parallelogram.D.y)]
-    pnp = PNP()
-    R_mat, T_vec = pnp.find_R_t(pts_2D)
-    homography_distance = pnp.calculate_distance_from_T(T_vec)
-    print('R_mat: '); print(R_mat)
-    print('T_vec: '); print(T_vec)
-    print('Calculated distance from T_vector: '); print(homography_distance)
-    print('Pinhole distance: '); print(parallelogram.pinhole_distance)
+    print(quadrilateral.vertices_2D)
+    print('R_vec: '); 
+    print(quadrilateral.R_vec)
+    print('T_vec: '); 
+    print(quadrilateral.T_vec)
+    print('Calculated distance from T_vector: '); 
+    print(quadrilateral.homography_distance)
+    print('Pinhole distance: '); 
+    print(quadrilateral.pinhole_distance)
 
 def main():
   with open(JSON_INPUT) as f:
     data = json.load(f)
   P = Processing()
-  parallelogram_arr = P.create_parallelogram_arr(data)
-  # P.write_to_json(parallelogram_arr, JSON_OUTPUT)
-  # TO DO: write_to_json not working
+  quadrilateral_arr = P.create_quadrilateral_arr(data)
+  P.write_to_json(quadrilateral_arr, JSON_OUTPUT)
+  
   print('***********************************************************************')
-  pinhole_distance_arr = [obj.pinhole_distance for obj in parallelogram_arr]
-  P.find_distance_stats(parallelogram_arr, pinhole_distance_arr, model='pinhole')
+  pinhole_distance_arr = [obj.pinhole_distance for obj in quadrilateral_arr]
+  P.find_distance_stats(quadrilateral_arr, pinhole_distance_arr, model='pinhole')
   P.plot_histogram(pinhole_distance_arr)
 
   print('***********************************************************************')
-  homography_distance_arr = [obj.homography_distance for obj in parallelogram_arr]
-  P.find_distance_stats(parallelogram_arr, homography_distance_arr, model='homography')
+  homography_distance_arr = [obj.homography_distance for obj in quadrilateral_arr]
+  P.find_distance_stats(quadrilateral_arr, homography_distance_arr, model='homography')
   P.plot_histogram(homography_distance_arr)
 
   print('***********************************************************************')
-  P.print_an_example(parallelogram_arr[0])
+  P.print_an_example(quadrilateral_arr[0])
 
 if __name__== "__main__":
   main()

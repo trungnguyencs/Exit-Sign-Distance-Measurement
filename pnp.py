@@ -23,11 +23,18 @@ class PNP(object):
     # Solve PNP docs: 
     # https://docs.opencv.org/3.0-beta/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#solvepnp
     ret, R_vec, T_vec = cv2.solvePnP(DEFAULT_PTS_3D, pts_2D, K, DIST_COEFFS)
-    R_mat, _ = cv2.Rodrigues(R_vec)
-    return R_mat, T_vec
+    # R_mat, _ = cv2.Rodrigues(R_vec)
+    return R_vec, T_vec
 
   def calculate_distance_from_T(self, T_vec):
     """
     Distance is the magnidute of the T vector
     """
-    return np.sqrt(np.sum(T_vec ** 2))
+    return np.sqrt(np.sum(np.array(T_vec) ** 2))
+
+  def project_to_2D(self, R_vec, T_vec):
+    """
+    Project the 3D exit sign coodinates to 2D given the computed Extrinsic vectors
+    """
+    pts_2D, jacobian = cv2.projectPoints(DEFAULT_PTS_3D, np.array(R_vec), np.array(T_vec), K, DIST_COEFFS)
+    return pts_2D
