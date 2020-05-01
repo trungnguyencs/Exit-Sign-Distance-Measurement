@@ -1,8 +1,8 @@
 import numpy as np
 import cv2
 
-OBJ_WIDTH = 0.320 # Sign width = 0.32m 
-OBJ_HEIGHT = 0.200 # Sign height = 0.20m
+OBJ_WIDTH = 0.335 # Sign width in meters 
+OBJ_HEIGHT = 0.195 # Sign height in meters
 DEFAULT_PTS_3D = np.array([[0,         0,          0], [OBJ_WIDTH, 0,          0], \
                            [OBJ_WIDTH, OBJ_HEIGHT, 0], [0,         OBJ_HEIGHT, 0]], dtype=np.float32)
 K = np.array([[536, 0  , 180], \
