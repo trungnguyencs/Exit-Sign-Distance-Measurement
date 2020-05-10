@@ -3,8 +3,14 @@ import numpy as np
 from matplotlib import pyplot as plt
 from quadrilateral import Point, Quadrilateral
 
-JSON_INPUT = 'quadrilateral-raw-1807.json'
-JSON_OUTPUT = 'quadrilateral-distance-1787.json'
+# JSON_INPUT = 'quadrilateral-raw-1807.json'
+# JSON_OUTPUT = 'quadrilateral-results-1787.json'
+
+# JSON_INPUT = 'street-raw-4032x3024.json'
+# JSON_OUTPUT = 'street-results-4032x3024.json'
+
+JSON_INPUT = 'street-raw-1008x756.json'
+JSON_OUTPUT = 'street-results-1008x756.json'
 
 class Processing(object):
   def create_quadrilateral_arr(self, data):
@@ -16,16 +22,18 @@ class Processing(object):
       id = data[i]['External ID']
       url = data[i]['Labeled Data']
       try:
-        pts = data[i]['Label']['EXIT_sign'][0]['geometry']
+        # pts = data[i]['Label']['EXIT_sign'][0]['geometry']
+        # pts = data[i]['Label']['rectangle'][0]['geometry']
+        pts = data[i]['Label']['quad'][0]['geometry']
         p1 = Point(float(pts[0]['x']), float(pts[0]['y']))
         p2 = Point(float(pts[1]['x']), float(pts[1]['y']))
         p3 = Point(float(pts[2]['x']), float(pts[2]['y']))
         p4 = Point(float(pts[3]['x']), float(pts[3]['y']))
         pts = self.rearrange_pts(p1, p2, p3, p4)     # Rearrange the point in A B C D order
         quadrilateral_arr.append(Quadrilateral(id, url, pts))
-        print(quadrilateral)
       except:
         continue
+    quadrilateral_arr.sort(key=lambda x : x.id, reverse = False)
     return quadrilateral_arr
 
   def rearrange_pts(self, p1, p2, p3, p4):
@@ -65,20 +73,17 @@ class Processing(object):
           print('-----------------------------------')
         if obj.pinhole_distance == max_distance:
           print('Max pinhole distance: ' + str(obj.pinhole_distance))
-          print('\n')
           print('Image name: ' + obj.id)
           print('URL: ' + obj.url)
 
       elif model == 'homography':
         if obj.homography_distance == min_distance:
           print('Min homography distance: ' + str(obj.homography_distance))
-          print('\n')
           print(obj.id)
           print(obj.url)
           print('-----------------------------------')
         if obj.homography_distance == max_distance:
-          print('Max: ' + str(obj.homography_distance))
-          print('\n')
+          print('Max homography distance: ' + str(obj.homography_distance))
           print('Image name: ' + obj.id)
           print('URL: ' + obj.url)
 
@@ -135,24 +140,27 @@ def main():
   P.write_to_json(quadrilateral_arr, JSON_OUTPUT)
 
   print('\n')
-  print('***********************************************************************')
-  ave_x_err, ave_y_err = P.find_ave_proj_error(quadrilateral_arr)
-  print('Average x-axis projection error: ' + str(ave_x_err) + ' / 360 pixels')
-  print('Average y-axis projection error: ' + str(ave_y_err) + ' / 640 pixels')
+  # print('***********************************************************************')
+  # ave_x_err, ave_y_err = P.find_ave_proj_error(quadrilateral_arr)
+  # print('Average x-axis projection error: ' + str(ave_x_err))
+  # print('Average y-axis projection error: ' + str(ave_y_err))
 
-  print('***********************************************************************')
-  pinhole_distance_arr = [obj.pinhole_distance for obj in quadrilateral_arr]
-  P.analyze_distance_stats(quadrilateral_arr, pinhole_distance_arr, model='pinhole')
-  # P.plot_histogram(pinhole_distance_arr)
+  # print('***********************************************************************')
+  # pinhole_distance_arr = [obj.pinhole_distance for obj in quadrilateral_arr]
+  # P.analyze_distance_stats(quadrilateral_arr, pinhole_distance_arr, model='pinhole')
+  # # P.plot_histogram(pinhole_distance_arr)
 
   print('***********************************************************************')
   homography_distance_arr = [obj.homography_distance for obj in quadrilateral_arr]
   P.analyze_distance_stats(quadrilateral_arr, homography_distance_arr, model='homography')
   # P.plot_histogram(homography_distance_arr)
 
-  print('***********************************************************************')
-  P.print_an_example(quadrilateral_arr[1])
+  # print('***********************************************************************')
+  # P.print_an_example(quadrilateral_arr[1])
   print('\n')
+
+  for quadrilateral in quadrilateral_arr:
+    print(quadrilateral.id + ' ' + str(quadrilateral.homography_distance))
 
 if __name__== "__main__":
   main()
