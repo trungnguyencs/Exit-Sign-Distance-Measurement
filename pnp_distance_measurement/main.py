@@ -3,14 +3,14 @@ import numpy as np
 from matplotlib import pyplot as plt
 from quadrilateral import Point, Quadrilateral
 
-# JSON_INPUT = 'quadrilateral-raw-1807.json'
-# JSON_OUTPUT = 'quadrilateral-results-1787.json'
+# JSON_INPUT = 'json/quadrilateral-raw-1807.json'
+# JSON_OUTPUT = 'json/quadrilateral-results-1787.json'
 
-# JSON_INPUT = 'street-raw-4032x3024.json'
-# JSON_OUTPUT = 'street-results-4032x3024.json'
+JSON_INPUT = 'json/street-raw-4032x3024.json'
+JSON_OUTPUT = 'json/street-results-4032x3024.json'
 
-JSON_INPUT = 'street-raw-1008x756.json'
-JSON_OUTPUT = 'street-results-1008x756.json'
+# JSON_INPUT = 'json/street-raw-1008x756.json'
+# JSON_OUTPUT = 'json/street-results-1008x756.json'
 
 class Processing(object):
   def create_quadrilateral_arr(self, data):
@@ -23,8 +23,7 @@ class Processing(object):
       url = data[i]['Labeled Data']
       try:
         # pts = data[i]['Label']['EXIT_sign'][0]['geometry']
-        # pts = data[i]['Label']['rectangle'][0]['geometry']
-        pts = data[i]['Label']['quad'][0]['geometry']
+        pts = data[i]['Label']['rectangle'][0]['geometry']
         p1 = Point(float(pts[0]['x']), float(pts[0]['y']))
         p2 = Point(float(pts[1]['x']), float(pts[1]['y']))
         p3 = Point(float(pts[2]['x']), float(pts[2]['y']))
@@ -58,34 +57,21 @@ class Processing(object):
       err_y += quadrilateral.y_err
     return (err_x/len(quadrilateral_arr), err_y/len(quadrilateral_arr))
 
-  def analyze_distance_stats(self, quadrilateral_arr, distance_arr, model):
+  def analyze_distance_stats(self, quadrilateral_arr, distance_arr):
     """
     Find the image with maximum / minimum distance among the dataset for analysis
     """
     min_distance, max_distance = min(distance_arr), max(distance_arr)
     for obj in quadrilateral_arr:
-      if model == 'pinhole':
-        if obj.pinhole_distance == min_distance:
-          print('Min pinhole distance: ' + str(obj.pinhole_distance))
-          print('\n')
-          print('Image name: ' + obj.id)
-          print('URL: ' + obj.url)
-          print('-----------------------------------')
-        if obj.pinhole_distance == max_distance:
-          print('Max pinhole distance: ' + str(obj.pinhole_distance))
-          print('Image name: ' + obj.id)
-          print('URL: ' + obj.url)
-
-      elif model == 'homography':
-        if obj.homography_distance == min_distance:
-          print('Min homography distance: ' + str(obj.homography_distance))
-          print(obj.id)
-          print(obj.url)
-          print('-----------------------------------')
-        if obj.homography_distance == max_distance:
-          print('Max homography distance: ' + str(obj.homography_distance))
-          print('Image name: ' + obj.id)
-          print('URL: ' + obj.url)
+      if obj.distance == min_distance:
+        print('Min distance: ' + str(obj.distance))
+        print(obj.id)
+        print(obj.url)
+        print('-----------------------------------')
+      if obj.distance == max_distance:
+        print('Max distance: ' + str(obj.distance))
+        print('Image name: ' + obj.id)
+        print('URL: ' + obj.url)
 
   def plot_histogram(self, arr):
     plt.hist(arr, rwidth=0.8, bins=50) 
@@ -99,30 +85,21 @@ class Processing(object):
     """
     print("2D coordinates of the testing point: ")
     print(quadrilateral.vertices_2D)
-    print('\n')
 
     print("2D projected coordinates of the testing point: ")
     print(quadrilateral.projected_vertices_2D)
-    print('\n')
 
-    print("x-axis projection error: " + str(quadrilateral.x_err) + ' / 360 pixels')
-    print("y-axis projection error: " + str(quadrilateral.y_err) + ' / 640 pixels')
-    print('\n')
+    print("x-axis projection error: " + str(quadrilateral.x_err) + ' pixel')
+    print("y-axis projection error: " + str(quadrilateral.y_err) + ' pixel')
 
     print('R_vec: '); 
     print(quadrilateral.R_vec)
-    print('\n')
 
     print('T_vec: '); 
     print(quadrilateral.T_vec)
-    print('\n')
 
     print('Calculated distance from T_vector: '); 
-    print(str(quadrilateral.homography_distance) + ' (meters)')
-    print('\n')
-
-    print('Pinhole distance: '); 
-    print(str(quadrilateral.pinhole_distance) + ' (meters)')
+    print(str(quadrilateral.distance) + ' (meters)')
 
   def write_to_json(self, arr, json_file_name):
     """
@@ -139,28 +116,23 @@ def main():
   quadrilateral_arr = P.create_quadrilateral_arr(data)
   P.write_to_json(quadrilateral_arr, JSON_OUTPUT)
 
-  print('\n')
-  # print('***********************************************************************')
-  # ave_x_err, ave_y_err = P.find_ave_proj_error(quadrilateral_arr)
-  # print('Average x-axis projection error: ' + str(ave_x_err))
-  # print('Average y-axis projection error: ' + str(ave_y_err))
-
-  # print('***********************************************************************')
-  # pinhole_distance_arr = [obj.pinhole_distance for obj in quadrilateral_arr]
-  # P.analyze_distance_stats(quadrilateral_arr, pinhole_distance_arr, model='pinhole')
-  # # P.plot_histogram(pinhole_distance_arr)
+  print('***********************************************************************')
+  ave_x_err, ave_y_err = P.find_ave_proj_error(quadrilateral_arr)
+  print('Average x-axis projection error: ' + str(ave_x_err))
+  print('Average y-axis projection error: ' + str(ave_y_err))
 
   print('***********************************************************************')
-  homography_distance_arr = [obj.homography_distance for obj in quadrilateral_arr]
-  P.analyze_distance_stats(quadrilateral_arr, homography_distance_arr, model='homography')
-  # P.plot_histogram(homography_distance_arr)
+  distance_arr = [obj.distance for obj in quadrilateral_arr]
+  P.analyze_distance_stats(quadrilateral_arr, distance_arr)
+  # P.plot_histogram(distance_arr)
 
   # print('***********************************************************************')
   # P.print_an_example(quadrilateral_arr[1])
-  print('\n')
 
+  print('***********************************************************************')
   for quadrilateral in quadrilateral_arr:
-    print(quadrilateral.id + ' ' + str(quadrilateral.homography_distance))
+    print(quadrilateral.id + ' ' + str(quadrilateral.distance))
+  print('***********************************************************************')
 
 if __name__== "__main__":
   main()
