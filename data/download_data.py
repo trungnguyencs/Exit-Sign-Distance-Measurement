@@ -1,11 +1,8 @@
 import json
 from multiprocessing.dummy import Pool as ThreadPool
-from urllib import urlretrieve
 import gdown
-# from urllib.request import urlretrieve
 
-IMG_PATH = './data/imgs/'
-# LABEL_PATH = './data/labels/'
+IMG_PATH = './exit_sign_imgs/'
 
 def get_list(data):
   success, failed = [], []
@@ -19,11 +16,10 @@ def get_list(data):
       failed.append((id, img_url))
   return success, failed
 
-def get_url(id, img_url, label_url):
-  urlretrieve(img_url, IMG_PATH + id + 'jpg')
-  # urlretrieve(label_url, LABEL_PATH + id)
+def get_url(id, img_url):
+  gdown.download(img_url, IMG_PATH + id, quiet=False) 
 
-with open('quadrilateral-1807.json') as f:
+with open('./data/quadrilateral-raw-1807.json') as f:
   data = json.load(f)
 success, failed = get_list(data)
 
@@ -32,9 +28,6 @@ print('Failure count ' + str(len(failed)))
 
 for i in range(0, len(success)):
   (id, img_url, label_url) = success[i]
-  get_url(id, img_url, label_url)
+  get_url(id, img_url)
   print(str(i) + ' ' + id)
-
-# pool = ThreadPool(100)
-# results = pool.starmap(get_url, zip(success.values(), success.keys()))
 

@@ -1,4 +1,5 @@
-data
+*.jpg
+*.jpeg
 .gitattributes
 *.pyc
 tflite
