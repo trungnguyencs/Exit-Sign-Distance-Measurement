@@ -4,7 +4,7 @@ from urllib import urlretrieve
 # from urllib.request import urlretrieve
 
 IMG_PATH = './data/imgs/'
-LABEL_PATH = './data/labels/'
+# LABEL_PATH = './data/labels/'
 
 def get_list(data):
   success, failed = [], []
@@ -20,14 +20,14 @@ def get_list(data):
 
 def get_url(id, img_url, label_url):
   urlretrieve(img_url, IMG_PATH + id)
-  urlretrieve(label_url, LABEL_PATH + id)
+  # urlretrieve(label_url, LABEL_PATH + id)
 
 with open('quadrilateral-1807.json') as f:
   data = json.load(f)
 success, failed = get_list(data)
 
-print(len(success))
-print(len(failed))
+print('Success count ' + str(len(success)))
+print('Failure count ' + str(len(failed)))
 
 for i in range(0, len(success)):
   (id, img_url, label_url) = success[i]

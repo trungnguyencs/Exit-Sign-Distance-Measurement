@@ -4,6 +4,13 @@ import glob
 import yaml
 # import pathlib
 
+images = glob.glob(r'calib_imgs_4032x3024/*.jpg')
+path = './calib_results_4032x3024'
+# images = glob.glob(r'calib_imgs_1008x756/*.jpg')
+# path = './calib_results_1008x756'
+# pathlib.Path(path).mkdir(parents=True, exist_ok=True) 
+images.sort()
+
 # termination criteria
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
@@ -12,12 +19,6 @@ objp[:,:2] = np.mgrid[0:7,0:6].T.reshape(-1,2)
 # Arrays to store object points and image points from all the images.
 objpoints = [] # 3d point in real world space
 imgpoints = [] # 2d points in image plane.
-
-images = glob.glob(r'calib_imgs/*.jpg')
-images.sort()
-
-path = './results'
-# pathlib.Path(path).mkdir(parents=True, exist_ok=True) 
 
 found = 0
 for fname in images:  # Here, 10 can be changed to whatever number you like to choose

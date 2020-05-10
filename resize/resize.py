@@ -2,7 +2,8 @@ import cv2
 import glob
 
 images = glob.glob(r'./to_resize/*.jpg')
-OUTPUT_FOLDER = './resized/calib'
+# OUTPUT_FOLDER = './resized/calib'
+OUTPUT_FOLDER = './resized/street'
 SCALE_PERCENT = 0.25
 count = 1
 
