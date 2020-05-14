@@ -3,14 +3,21 @@ import numpy as np
 from matplotlib import pyplot as plt
 from quadrilateral import Point, Quadrilateral
 
-# JSON_INPUT = 'json/quadrilateral-raw-1807.json'
-# JSON_OUTPUT = 'json/quadrilateral-results-1787.json'
+JSON_INPUT = 'json/quadrilateral-raw-1807.json'
+JSON_OUTPUT = 'json/quadrilateral-results-1787.json'
+IMG_PATH = '../data/exit_sign_imgs/'
+LABEL = 'EXIT_sign'
 
-JSON_INPUT = 'json/street-raw-4032x3024.json'
-JSON_OUTPUT = 'json/street-results-4032x3024.json'
+
+# JSON_INPUT = 'json/street-raw-4032x3024.json'
+# JSON_OUTPUT = 'json/street-results-4032x3024.json'
+# IMG_PATH = '../data/street_data/street_4032x3024/'
+# LABEL = 'rectangle'
 
 # JSON_INPUT = 'json/street-raw-1008x756.json'
 # JSON_OUTPUT = 'json/street-results-1008x756.json'
+# IMG_PATH = '../data/street_data/street_4032x3024/'
+# LABEL = 'rectangle'
 
 class Processing(object):
   def create_quadrilateral_arr(self, data):
@@ -22,29 +29,18 @@ class Processing(object):
       id = data[i]['External ID']
       url = data[i]['Labeled Data']
       try:
-        # pts = data[i]['Label']['EXIT_sign'][0]['geometry']
-        pts = data[i]['Label']['rectangle'][0]['geometry']
+        pts = data[i]['Label'][LABEL][0]['geometry']
+        # pts = data[i]['Label'][LABEL][0]['geometry']
         p1 = Point(float(pts[0]['x']), float(pts[0]['y']))
         p2 = Point(float(pts[1]['x']), float(pts[1]['y']))
         p3 = Point(float(pts[2]['x']), float(pts[2]['y']))
         p4 = Point(float(pts[3]['x']), float(pts[3]['y']))
-        pts = self.rearrange_pts(p1, p2, p3, p4)     # Rearrange the point in A B C D order
+        pts = (p1, p2, p3, p4)
         quadrilateral_arr.append(Quadrilateral(id, url, pts))
       except:
         continue
     quadrilateral_arr.sort(key=lambda x : x.id, reverse = False)
     return quadrilateral_arr
-
-  def rearrange_pts(self, p1, p2, p3, p4):
-    """
-    From 4 corner points, put them in A B C D order of a quadrilateral
-    """
-    arr = [p1, p2, p3, p4]
-    arr.sort(key=lambda p: (p.x, p.y))
-    # A and D will have smaller x, B and C will have larger x
-    (A, D) = (arr[0], arr[1]) if arr[0].y < arr[1].y else (arr[1], arr[0])
-    (B, C) = (arr[2], arr[3]) if arr[2].y < arr[3].y else (arr[3], arr[2])
-    return (A, B, C, D)
 
   def find_ave_proj_error(self, quadrilateral_arr):
     """
@@ -78,6 +74,13 @@ class Processing(object):
     plt.xlabel('Distance (in meter)')
     plt.title('Histogram of distances')
     plt.show()
+
+  def display_image(self, quadrilateral):
+    img = cv2.imread(IMG_PATH + quadrilateral.id)
+    window_name = 'Image ' + quadrilateral.id + ', Distance: ' + str(quadrilateral.distance)
+    cv2.imshow(window_name, img)
+    cv2.waitKey(7000)
+    cv2.destroyWindow(window_name)
 
   def print_an_example(self, quadrilateral):
     """
@@ -121,17 +124,20 @@ def main():
   print('Average x-axis projection error: ' + str(ave_x_err))
   print('Average y-axis projection error: ' + str(ave_y_err))
 
-  print('***********************************************************************')
-  distance_arr = [obj.distance for obj in quadrilateral_arr]
-  P.analyze_distance_stats(quadrilateral_arr, distance_arr)
+  # print('***********************************************************************')
+  # distance_arr = [obj.distance for obj in quadrilateral_arr]
+  # P.analyze_distance_stats(quadrilateral_arr, distance_arr)
   # P.plot_histogram(distance_arr)
 
   # print('***********************************************************************')
   # P.print_an_example(quadrilateral_arr[1])
 
   print('***********************************************************************')
-  for quadrilateral in quadrilateral_arr:
+  for i in range(100):
+    # i = np.random.randint(0, len(quadrilateral_arr))
+    quadrilateral = quadrilateral_arr[i]
     print(quadrilateral.id + ' ' + str(quadrilateral.distance))
+    P.display_image(quadrilateral)
   print('***********************************************************************')
 
 if __name__== "__main__":
