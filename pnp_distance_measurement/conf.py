@@ -1,11 +1,25 @@
 import numpy as np
 
-# model = 'groundtruth_iPhone8_'
+# model = 'groundtruth_1920x1440_iPhone8'
 # model = 'main_360x640'
 # model = 'street_4032x3024_iPhone8s'
 model = 'street_1008x756_iPhone8s'
 
-if model == 'main_360x640':
+if model == 'groundtruth_1920x1440_iPhone8':
+  # Groundthruth data set, img size 1920x1440
+  # JSON_INPUT = ''
+  # JSON_OUTPUT = ''
+  # IMG_PATH = '../data/groundtruth_exit_sign/'
+  # LABEL = ''
+
+  OBJ_WIDTH = 0.335 # Sign width in meters 
+  OBJ_HEIGHT = 0.195 # Sign height in meters
+  K = np.array([[1602, 0,    1920//2], \
+                [0,    1602, 1440//2], \
+                [0,    0,    1      ]], dtype=np.float32)
+  DIST_COEFFS = np.array([0, 0, 0, 0], dtype=np.float32)  
+
+elif model == 'main_360x640':
   # Main data set, img size 360x640
   JSON_INPUT = 'json/quadrilateral-raw-1807.json'
   JSON_OUTPUT = 'json/quadrilateral-results-1787.json'
@@ -14,9 +28,9 @@ if model == 'main_360x640':
 
   OBJ_WIDTH = 0.335 # Sign width in meters 
   OBJ_HEIGHT = 0.195 # Sign height in meters
-  K = np.array([[536, 0,   180], \
-                [0,   536, 320], \
-                [0,   0,   1  ]], dtype=np.float32)
+  K = np.array([[536,  0,    360//2], \
+                [0,    536,  640//2], \
+                [0,    0,    1     ]], dtype=np.float32)
   DIST_COEFFS = np.array([0, 0, 0, 0], dtype=np.float32)
 
 elif model == 'street_4032x3024_iPhone8s':
