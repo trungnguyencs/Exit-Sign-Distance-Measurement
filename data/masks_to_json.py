@@ -3,7 +3,7 @@ import os, fnmatch
 import numpy as np
 
 MASK_PATH = './groundtruth_exit_sign_cleaned/masks/'
-JSON_OUTPUT = './groundtruth_852.json'
+JSON_OUTPUT = './json/groundtruth-830.json'
 
 def get_file_list(path):
   """
@@ -50,9 +50,10 @@ class Quadrilateral(object):
   def __init__(self, mask_id, vertices_2D):
     img_arr = mask_id.split('_')
     img_arr[2] = 'imgs'
-    img_arr[-1] = 'jpg'
+    extension = img_arr.pop().split('.')
+    img_arr.append(extension[0])
     self.mask_id = mask_id
-    self.img_id = '_'.join(img_arr)
+    self.img_id = '_'.join(img_arr) + '.jpg'
     self.vertices_2D = vertices_2D
 
 if __name__ == '__main__':
@@ -65,5 +66,6 @@ if __name__ == '__main__':
     if len(corners) == 4:
       quadrilateral_arr.append(Quadrilateral(filename, corners))
       print(str(i) + ' ' + filename)
-  write_to_json(quadrilateral_arr.sort(key=lambda x:x.mask_id), JSON_OUTPUT)
+  print(len(quadrilateral_arr))
+  write_to_json(sorted(quadrilateral_arr, key=lambda x:x.mask_id), JSON_OUTPUT)
 

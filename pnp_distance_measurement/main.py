@@ -5,25 +5,35 @@ from pnp import Point, Quadrilateral
 import conf 
 
 class Processing(object):
-  def create_quadrilateral_arr(self, data):
+  def create_quadrilateral_arr(self, data, json_flag):
     """
     Create an array of quadrilateral objects from the input data json object
     """
     quadrilateral_arr = []
-    for i in range(len(data)):
-      id = data[i]['External ID']
-      url = data[i]['Labeled Data']
-      try:
-        pts = data[i]['Label'][conf.LABEL][0]['geometry']
-        p1 = Point(float(pts[0]['x']), float(pts[0]['y']))
-        p2 = Point(float(pts[1]['x']), float(pts[1]['y']))
-        p3 = Point(float(pts[2]['x']), float(pts[2]['y']))
-        p4 = Point(float(pts[3]['x']), float(pts[3]['y']))
-        pts = (p1, p2, p3, p4)
-        quadrilateral_arr.append(Quadrilateral(id, url, pts))
-      except:
-        continue
-    quadrilateral_arr.sort(key=lambda x : x.id, reverse = False)
+    if json_flag == 'from labelbox':
+      for i in range(len(data)):
+        id = data[i]['External ID']
+        try:
+          pts = data[i]['Label'][conf.LABEL][0]['geometry']
+          p1 = Point(float(pts[0]['x']), float(pts[0]['y']))
+          p2 = Point(float(pts[1]['x']), float(pts[1]['y']))
+          p3 = Point(float(pts[2]['x']), float(pts[2]['y']))
+          p4 = Point(float(pts[3]['x']), float(pts[3]['y']))
+          quadrilateral_arr.append(Quadrilateral(id, (p1, p2, p3, p4)))
+        except:
+          continue
+      quadrilateral_arr.sort(key=lambda x : x.id, reverse = False)
+
+    elif json_flag == 'from reading imgs':
+      for i in range(len(data)):
+        id = data[i]['img_id']
+        pts = data[i]['vertices_2D']
+        p1 = Point(pts[0][0], pts[0][1])
+        p2 = Point(pts[1][0], pts[1][1])
+        p3 = Point(pts[2][0], pts[2][1])
+        p4 = Point(pts[3][0], pts[3][1])
+        quadrilateral_arr.append(Quadrilateral(id, (p1, p2, p3, p4)))
+
     return quadrilateral_arr
 
   def find_ave_proj_error(self, quadrilateral_arr):
@@ -84,6 +94,7 @@ class Processing(object):
       img = cv2.arrowedLine(img, start_point, end_point,  
                         color=(255, 0, 0), thickness=1, tipLength=0.5)      
 
+    img = cv2.resize(img, (672, 504))
     cv2.imshow(window_name, img)
     cv2.waitKey(1000)
     cv2.destroyWindow(window_name)
@@ -122,7 +133,7 @@ def main():
   with open(conf.JSON_INPUT) as f:
     data = json.load(f)
   P = Processing()
-  quadrilateral_arr = P.create_quadrilateral_arr(data)
+  quadrilateral_arr = P.create_quadrilateral_arr(data, conf.JSON_FLAG)
   P.write_to_json(quadrilateral_arr, conf.JSON_OUTPUT)
 
   print('***********************************************************************')
@@ -143,9 +154,10 @@ def main():
     # i = np.random.randint(0, len(quadrilateral_arr))
     quadrilateral = quadrilateral_arr[i]
     print(quadrilateral.id + ' ' + str(quadrilateral.distance))
-    P.display_image(quadrilateral)
+    # P.display_image(quadrilateral)
   print('***********************************************************************')
-
+  print(len(quadrilateral_arr))
+  
 if __name__== "__main__":
   main()
 

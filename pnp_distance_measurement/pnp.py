@@ -8,14 +8,13 @@ class Point(object):
     self.y = y
 
 class Quadrilateral(object):
-  def __init__(self, id, url, pts):
+  def __init__(self, id, pts):
     """
     vertices_2D: in [A,B,C,D] order that maches the exit sign
     url: url to download the original image
     """
     (A, B, C, D) = self.rearrange_pts(pts)
     self.id = id
-    self.url = url
     self.vertices_2D = [[A.x, A.y],[B.x,B.y],[C.x,C.y],[D.x,D.y]]
 
     self.R_vec, self.T_vec = self.find_R_t(self.vertices_2D)
