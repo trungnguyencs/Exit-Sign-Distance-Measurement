@@ -1,23 +1,8 @@
 import json, cv2
 import numpy as np
 from matplotlib import pyplot as plt
-from quadrilateral import Point, Quadrilateral
-
-JSON_INPUT = 'json/quadrilateral-raw-1807.json'
-JSON_OUTPUT = 'json/quadrilateral-results-1787.json'
-IMG_PATH = '../data/exit_sign_imgs/'
-LABEL = 'EXIT_sign'
-
-
-# JSON_INPUT = 'json/street-raw-4032x3024.json'
-# JSON_OUTPUT = 'json/street-results-4032x3024.json'
-# IMG_PATH = '../data/street_data/street_4032x3024/'
-# LABEL = 'rectangle'
-
-# JSON_INPUT = 'json/street-raw-1008x756.json'
-# JSON_OUTPUT = 'json/street-results-1008x756.json'
-# IMG_PATH = '../data/street_data/street_4032x3024/'
-# LABEL = 'rectangle'
+from pnp import Point, Quadrilateral
+import conf 
 
 class Processing(object):
   def create_quadrilateral_arr(self, data):
@@ -29,8 +14,7 @@ class Processing(object):
       id = data[i]['External ID']
       url = data[i]['Labeled Data']
       try:
-        pts = data[i]['Label'][LABEL][0]['geometry']
-        # pts = data[i]['Label'][LABEL][0]['geometry']
+        pts = data[i]['Label'][conf.LABEL][0]['geometry']
         p1 = Point(float(pts[0]['x']), float(pts[0]['y']))
         p2 = Point(float(pts[1]['x']), float(pts[1]['y']))
         p3 = Point(float(pts[2]['x']), float(pts[2]['y']))
@@ -76,10 +60,32 @@ class Processing(object):
     plt.show()
 
   def display_image(self, quadrilateral):
-    img = cv2.imread(IMG_PATH + quadrilateral.id)
+    """
+    Display the image, the projected-back exit sign and its 5 normal vectors 
+    (4 at 4 corners plus one at the center of the exit sign)
+    """
+    img = cv2.imread(conf.IMG_PATH + quadrilateral.id)
     window_name = 'Image ' + quadrilateral.id + ', Distance: ' + str(quadrilateral.distance)
+
+    # Draw the projected vertices
+    img = cv2.polylines(img, np.int32([quadrilateral.vertices_2D]),  
+                      isClosed=True, color=(0, 255, 0), thickness=2)
+
+    # Draw the normal vector at the center of the quadrilateral
+    start_point = tuple(quadrilateral.projected_normal_vec[0])
+    end_point = tuple(quadrilateral.projected_normal_vec[1])
+    img = cv2.arrowedLine(img, start_point, end_point,  
+                      color=(255, 0, 0), thickness=1, tipLength=0.5)
+
+    # Draw the normal vector ar each corner
+    for i in range(len(quadrilateral.projected_vertices_2D)):
+      start_point = tuple(quadrilateral.projected_vertices_2D[i])
+      end_point = tuple(quadrilateral.projected_parallel_vertices_2D[i])
+      img = cv2.arrowedLine(img, start_point, end_point,  
+                        color=(255, 0, 0), thickness=1, tipLength=0.5)      
+
     cv2.imshow(window_name, img)
-    cv2.waitKey(7000)
+    cv2.waitKey(1000)
     cv2.destroyWindow(window_name)
 
   def print_an_example(self, quadrilateral):
@@ -113,11 +119,11 @@ class Processing(object):
       outfile.write(json_obj)
 
 def main():
-  with open(JSON_INPUT) as f:
+  with open(conf.JSON_INPUT) as f:
     data = json.load(f)
   P = Processing()
   quadrilateral_arr = P.create_quadrilateral_arr(data)
-  P.write_to_json(quadrilateral_arr, JSON_OUTPUT)
+  P.write_to_json(quadrilateral_arr, conf.JSON_OUTPUT)
 
   print('***********************************************************************')
   ave_x_err, ave_y_err = P.find_ave_proj_error(quadrilateral_arr)
@@ -133,7 +139,7 @@ def main():
   # P.print_an_example(quadrilateral_arr[1])
 
   print('***********************************************************************')
-  for i in range(100):
+  for i in range(len(quadrilateral_arr)):
     # i = np.random.randint(0, len(quadrilateral_arr))
     quadrilateral = quadrilateral_arr[i]
     print(quadrilateral.id + ' ' + str(quadrilateral.distance))

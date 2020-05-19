@@ -1,60 +1,97 @@
-import numpy as np
 import cv2
+import numpy as np
+import conf
 
-# Camera matrix of camera used to obtain the exit sign data
-OBJ_WIDTH = 0.335 # Sign width in meters 
-OBJ_HEIGHT = 0.195 # Sign height in meters
-K = np.array([[536, 0,   180], \
-              [0,   536, 320], \
-              [0,   0,   1  ]], dtype=np.float32)
-DIST_COEFFS = np.array([0, 0, 0, 0], dtype=np.float32)
+class Point(object):
+  def __init__(self, x, y):
+    self.x = x
+    self.y = y
 
-# Camera matrix of iPhone 8s, img size 4032x3024
-# OBJ_WIDTH = 32.0 * 0.0254
-# OBJ_HEIGHT = 19.0 * 0.0254
-# K = np.array([[3280.1416389452497, 0.0,                2051.308838596682 ], \
-#               [0.0,                3298.877562243612,  1457.0395478396988], \
-#               [0.0,                0.0,                1.0               ]], dtype=np.float32)
-# DIST_COEFFS = np.array([0.3584224308304239, -3.2316961497984638, -0.0020241077395336247, \
-#                         0.005125810383911658, 9.145486487494859], dtype=np.float32)
+class Quadrilateral(object):
+  def __init__(self, id, url, pts):
+    """
+    vertices_2D: in [A,B,C,D] order that maches the exit sign
+    url: url to download the original image
+    """
+    (A, B, C, D) = self.rearrange_pts(pts)
+    self.id = id
+    self.url = url
+    self.vertices_2D = [[A.x, A.y],[B.x,B.y],[C.x,C.y],[D.x,D.y]]
 
-# Camera matrix of iPhone8s, img resized 1008x756
-# OBJ_WIDTH = 32.0 * 0.0254
-# OBJ_HEIGHT = 19.0 * 0.0254
-# K = np.array([[819.7375674224452,  0.0,                512.6162509923176 ], \
-#               [0.0,                824.4628650025569,  363.63539991910477], \
-#               [0.0,                0.0,                1.0               ]], dtype=np.float32)
-# DIST_COEFFS = np.array([0.3625525153631118, -3.2679279813000974, -0.0021839532687696257, \
-#                         0.005111306480977345, 9.299685322344486], dtype=np.float32)
+    self.R_vec, self.T_vec = self.find_R_t(self.vertices_2D)
+    self.distance = self.find_distance(self.T_vec)
+    self.projected_vertices_2D = self.project_2D(self.R_vec, self.T_vec, conf.DEFAULT_VERTICES_3D)
+    
+    self.projected_normal_vec = self.project_2D(self.R_vec, self.T_vec, conf.DEFAULT_NORMAL_VECTOR_3D)
+    self.projected_parallel_vertices_2D = self.project_2D(self.R_vec, self.T_vec, conf.PARALLEL_VERTICES_3D)
+    
+    self.x_err, self.y_err = self.find_projection_err(self.vertices_2D, self.projected_vertices_2D)
 
-DEFAULT_PTS_3D = np.array([[0,         0,          0], [OBJ_WIDTH, 0,          0], \
-                           [OBJ_WIDTH, OBJ_HEIGHT, 0], [0,         OBJ_HEIGHT, 0]], dtype=np.float32)
+  def rearrange_pts(self, pts):
+    """
+    From 4 corner points of random order, put them in A B C D order of a quadrilateral
+    A -------- B
+    |          |
+    D -------- C
+    or if it's like this
+    A -- B                B -- C
+    |    |                |    |
+    |    | then rotate to |    |
+    |    |                |    |
+    D -- C                A -- D
+    """
+    arr = list(pts)
+    arr.sort(key=lambda p: (p.x, p.y))
+    # A and D will have smaller x, B and C will have larger x
+    (A, D) = (arr[0], arr[1]) if arr[0].y < arr[1].y else (arr[1], arr[0])
+    (B, C) = (arr[2], arr[3]) if arr[2].y < arr[3].y else (arr[3], arr[2])
+    pts = self.rotate_vertical_quadrilateral(A,B,C,D)
+    return pts
 
-class PNP(object):
+  def rotate_vertical_quadrilateral(self,A,B,C,D):
+    """
+    If the quadrilateral is vertical, then return the 90 degree rotate right order
+    so that it matches the exit sign
+    """
+    def euclidean_distance(ptA, ptB):
+      return ((ptA.x - ptB.x)**2 + (ptA.y - ptB.y)**2)**0.5
+
+    if euclidean_distance(A, B) < euclidean_distance(A, D):
+      return (D,A,B,C)
+    return (A,B,C,D)
+
   def find_R_t(self, pts_2D):
     """
     Find R vector and T vector from input 2D image points using PNP algorithm
+    Solve PNP docs: 
+    https://docs.opencv.org/3.0-beta/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#solvepnp
     """
     pts_2D = np.array(pts_2D, dtype=np.float32)
-    # H, status = cv2.findHomography(pts_2D, pts_3D)
-    # H = cv2.getPerspectiveTransform(pts_2D, pts_3D)
-    # num, Rs, Ts, Ns  = cv2.decomposeHomographyMat(H, K)
+    ret, R_vec, T_vec = cv2.solvePnP(conf.DEFAULT_VERTICES_3D, pts_2D, conf.K, conf.DIST_COEFFS)
+    return R_vec.tolist(), T_vec.tolist()
 
-    # Solve PNP docs: 
-    # https://docs.opencv.org/3.0-beta/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#solvepnp
-    ret, R_vec, T_vec = cv2.solvePnP(DEFAULT_PTS_3D, pts_2D, K, DIST_COEFFS)
-    # R_mat, _ = cv2.Rodrigues(R_vec)
-    return R_vec, T_vec
+  def find_distance(self, T_vec):
+    """
+    Calculate the distance to the exit sign as the magnitude of the traslational T_vector
+    """
+    distance = np.sqrt(np.sum(np.array(T_vec) ** 2))
+    return np.asscalar(distance)
 
-  def calculate_distance_from_T(self, T_vec):
+  def project_2D(self, R_vec, T_vec, pts_3D):
     """
-    Distance is the magnidute of the T vector
+    Project the 3D exit sign coodinates back to 2D given the computed Extrinsic vectors
     """
-    return np.sqrt(np.sum(np.array(T_vec) ** 2))
+    pts_2D, jacobian = cv2.projectPoints(pts_3D, np.array(R_vec), np.array(T_vec), conf.K, conf.DIST_COEFFS)
+    projected_vertices_2D = np.reshape(pts_2D, (-1,2))
+    return np.int32(projected_vertices_2D).tolist()
 
-  def project_to_2D(self, R_vec, T_vec):
+  def find_projection_err(self, vertices_2D, projected_vertices_2D):
     """
-    Project the 3D exit sign coodinates to 2D given the computed Extrinsic vectors
+    Calculate the average error (in pixels) between the labeled vertices and the 
+    projected vertices of a quadrilateral
     """
-    pts_2D, jacobian = cv2.projectPoints(DEFAULT_PTS_3D, np.array(R_vec), np.array(T_vec), K, DIST_COEFFS)
-    return np.reshape(pts_2D, (-1,2))
+    vertices_2D = np.array(vertices_2D)
+    projected_vertices_2D = np.array(projected_vertices_2D)
+    err = np.sum(np.abs(vertices_2D - projected_vertices_2D), axis=0)/len(vertices_2D)
+    return err.tolist()
+
