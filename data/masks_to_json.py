@@ -62,7 +62,8 @@ if __name__ == '__main__':
     img = cv2.imread(MASK_PATH + filename)
     corners = extract_corner(img)
   # visualize_corners(corners, img)
-    quadrilateral_arr.append(Quadrilateral(filename, corners))
-    print(str(i) + ' ' + str(len(corners)) + ' ' + filename)
-  write_to_json(quadrilateral_arr, JSON_OUTPUT)
+    if len(corners) == 4:
+      quadrilateral_arr.append(Quadrilateral(filename, corners))
+      print(str(i) + ' ' + filename)
+  write_to_json(quadrilateral_arr.sort(key=lambda x:x.mask_id), JSON_OUTPUT)
 
