@@ -69,3 +69,5 @@ DEFAULT_NORMAL_VECTOR_3D = np.array([[OBJ_WIDTH/2, OBJ_HEIGHT/2, 0         ],\
                                      [OBJ_WIDTH/2, OBJ_HEIGHT/2, OBJ_WIDTH ]], dtype=np.float32)
 PARALLEL_VERTICES_3D = np.array([[0,         0,          OBJ_WIDTH], [OBJ_WIDTH, 0,          OBJ_WIDTH], \
                                  [OBJ_WIDTH, OBJ_HEIGHT, OBJ_WIDTH], [0,         OBJ_HEIGHT, OBJ_WIDTH]], dtype=np.float32)
+
+
