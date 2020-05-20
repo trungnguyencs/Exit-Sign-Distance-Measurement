@@ -47,28 +47,6 @@ class Processing(object):
       err_y += quadrilateral.y_err
     return (err_x/len(quadrilateral_arr), err_y/len(quadrilateral_arr))
 
-  def analyze_distance_stats(self, quadrilateral_arr, distance_arr):
-    """
-    Find the image with maximum / minimum distance among the dataset for analysis
-    """
-    min_distance, max_distance = min(distance_arr), max(distance_arr)
-    for obj in quadrilateral_arr:
-      if obj.distance == min_distance:
-        print('Min distance: ' + str(obj.distance))
-        print(obj.id)
-        print(obj.url)
-        print('-----------------------------------')
-      if obj.distance == max_distance:
-        print('Max distance: ' + str(obj.distance))
-        print('Image name: ' + obj.id)
-        print('URL: ' + obj.url)
-
-  def plot_histogram(self, arr):
-    plt.hist(arr, rwidth=0.8, bins=50) 
-    plt.xlabel('Distance (in meter)')
-    plt.title('Histogram of distances')
-    plt.show()
-
   def display_image(self, quadrilateral):
     """
     Display the image, the projected-back exit sign and its 5 normal vectors 
@@ -99,27 +77,7 @@ class Processing(object):
     cv2.waitKey(1000)
     cv2.destroyWindow(window_name)
 
-  def print_an_example(self, quadrilateral):
-    """
-    Printing the processing results for quadrilateral index i
-    """
-    print("2D coordinates of the testing point: ")
-    print(quadrilateral.vertices_2D)
-
-    print("2D projected coordinates of the testing point: ")
-    print(quadrilateral.projected_vertices_2D)
-
-    print("x-axis projection error: " + str(quadrilateral.x_err) + ' pixel')
-    print("y-axis projection error: " + str(quadrilateral.y_err) + ' pixel')
-
-    print('R_vec: '); 
-    print(quadrilateral.R_vec)
-
-    print('T_vec: '); 
-    print(quadrilateral.T_vec)
-
-    print('Calculated distance from T_vector: '); 
-    print(str(quadrilateral.distance) + ' (meters)')
+    # cv2.imwrite(conf.ARROW_IMG_PATH + 'arrow_' + quadrilateral.id, img)    
 
   def write_to_json(self, arr, json_file_name):
     """
@@ -134,27 +92,20 @@ def main():
     data = json.load(f)
   P = Processing()
   quadrilateral_arr = P.create_quadrilateral_arr(data, conf.JSON_FLAG)
-  P.write_to_json(quadrilateral_arr, conf.JSON_OUTPUT)
+  # P.write_to_json(quadrilateral_arr, conf.JSON_OUTPUT)
 
   print('***********************************************************************')
   ave_x_err, ave_y_err = P.find_ave_proj_error(quadrilateral_arr)
   print('Average x-axis projection error: ' + str(ave_x_err))
   print('Average y-axis projection error: ' + str(ave_y_err))
 
-  # print('***********************************************************************')
-  # distance_arr = [obj.distance for obj in quadrilateral_arr]
-  # P.analyze_distance_stats(quadrilateral_arr, distance_arr)
-  # P.plot_histogram(distance_arr)
-
-  # print('***********************************************************************')
-  # P.print_an_example(quadrilateral_arr[1])
-
   print('***********************************************************************')
   for i in range(len(quadrilateral_arr)):
     # i = np.random.randint(0, len(quadrilateral_arr))
     quadrilateral = quadrilateral_arr[i]
     print(quadrilateral.id + ' ' + str(quadrilateral.distance))
-    # P.display_image(quadrilateral)
+    # img = P.display_image(quadrilateral)
+
   print('***********************************************************************')
   print(len(quadrilateral_arr))
   

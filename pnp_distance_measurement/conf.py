@@ -11,6 +11,7 @@ if model == 'groundtruth_1920x1440_iPhone8':
   JSON_OUTPUT = '../data/json/groundtruth-results-830.json'
   JSON_FLAG = 'from reading imgs'
   IMG_PATH = '../data/groundtruth_exit_sign_cleaned/imgs/'
+  ARROW_IMG_PATH = '../data/arrow_imgs/groundtruth_exit_sign/'
 
   OBJ_WIDTH = 0.335 # Sign width in meters 
   OBJ_HEIGHT = 0.195 # Sign height in meters
@@ -25,6 +26,7 @@ elif model == 'main_360x640':
   JSON_OUTPUT = '../data/json/quadrilateral-results-1787.json'
   JSON_FLAG = 'from labelbox'
   IMG_PATH = '../data/exit_sign/'
+  ARROW_IMG_PATH = '../data/arrow_imgs/exit_sign/'
   LABEL = 'EXIT_sign'
 
   OBJ_WIDTH = 0.335 # Sign width in meters 
@@ -40,6 +42,7 @@ elif model == 'street_4032x3024_iPhone8s':
   JSON_OUTPUT = '../data/json/street-results-4032x3024.json'
   JSON_FLAG = 'from labelbox'
   IMG_PATH = '../data/street_4032x3024/'
+  ARROW_IMG_PATH = '../data/arrow_imgs/street_4032x3024/'  
   LABEL = 'rectangle'
 
   OBJ_WIDTH = 32.0 * 0.0254
@@ -56,6 +59,7 @@ elif model == 'street_1008x756_iPhone8s':
   JSON_OUTPUT = '../data/json/street-results-1008x756.json'
   JSON_FLAG = 'from labelbox'
   IMG_PATH = '../data/street_1008x756/'
+  ARROW_IMG_PATH = '../data/arrow_imgs/street_1008x756/'
   LABEL = 'rectangle'
 
   OBJ_WIDTH = 32.0 * 0.0254
