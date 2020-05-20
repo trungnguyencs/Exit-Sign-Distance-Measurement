@@ -2,8 +2,8 @@ import cv2, json
 import os, fnmatch
 import numpy as np
 
-MASK_PATH = './groundtruth_exit_sign_cleaned/masks/'
-JSON_OUTPUT = './json/groundtruth-830.json'
+MASK_PATH = '../data/groundtruth_exit_sign_cleaned/masks/'
+JSON_OUTPUT = '../data/json/groundtruth-830.json'
 
 def get_file_list(path):
   """

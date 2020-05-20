@@ -76,7 +76,6 @@ class Processing(object):
     cv2.imshow(window_name, img)
     cv2.waitKey(1000)
     cv2.destroyWindow(window_name)
-
     # cv2.imwrite(conf.ARROW_IMG_PATH + 'arrow_' + quadrilateral.id, img)    
 
   def write_to_json(self, arr, json_file_name):

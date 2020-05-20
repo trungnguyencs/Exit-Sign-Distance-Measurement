@@ -2,7 +2,7 @@ import json
 from multiprocessing.dummy import Pool as ThreadPool
 import gdown
 
-IMG_PATH = './exit_sign_imgs/'
+IMG_PATH = './data/exit_sign/'
 
 def get_list(data):
   success, failed = [], []

@@ -8,9 +8,9 @@ import fnmatch
 import os
 import shutil
 
-JPG_OUTPUT_DIR = './groundtruth_exit_sign_cleaned/imgs/'
-PNG_OUTPUT_DIR = './groundtruth_exit_sign_cleaned/masks/'
-TXT_OUTPUT_DIR = './groundtruth_exit_sign_cleaned/camera_orientations/'
+JPG_OUTPUT_DIR = '../data/groundtruth_exit_sign_cleaned/imgs/'
+PNG_OUTPUT_DIR = '../data/groundtruth_exit_sign_cleaned/masks/'
+TXT_OUTPUT_DIR = '../data/groundtruth_exit_sign_cleaned/camera_orientations/'
 
 def match_file_type(root, filenames, type, lst):
   for filename in fnmatch.filter(filenames, '*.' + type):

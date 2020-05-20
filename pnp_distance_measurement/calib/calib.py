@@ -8,7 +8,6 @@ images = glob.glob(r'calib_imgs_4032x3024/*.jpg')
 path = './calib_results_4032x3024'
 # images = glob.glob(r'calib_imgs_1008x756/*.jpg')
 # path = './calib_results_1008x756'
-# pathlib.Path(path).mkdir(parents=True, exist_ok=True) 
 images.sort()
 
 # termination criteria
