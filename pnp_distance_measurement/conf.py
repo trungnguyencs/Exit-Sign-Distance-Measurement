@@ -1,7 +1,7 @@
 import numpy as np
 
-# model = 'groundtruth_1920x1440_iPhone8'
-model = 'main_360x640'
+model = 'groundtruth_1920x1440_iPhone8'
+# model = 'main_360x640'
 # model = 'street_4032x3024_iPhone8s'
 # model = 'street_1008x756_iPhone8s'
 
@@ -74,7 +74,7 @@ DEFAULT_VERTICES_3D = np.array([[0,         0,          0], [OBJ_WIDTH, 0,      
                                 [OBJ_WIDTH, OBJ_HEIGHT, 0], [0,         OBJ_HEIGHT, 0]], dtype=np.float32)
 DEFAULT_ORTHOGONALS_3D = np.array([[OBJ_WIDTH/2, OBJ_HEIGHT/2, 0         ],\
                                    [OBJ_WIDTH/2, OBJ_HEIGHT/2, OBJ_WIDTH ],\
-                                   [OBJ_WIDTH/2, 0,            0],\
-                                   [0,           OBJ_HEIGHT/2, 0]], dtype=np.float32)
+                                   [OBJ_WIDTH/2+OBJ_HEIGHT/2,  OBJ_HEIGHT/2, 0],\
+                                   [OBJ_WIDTH/2, OBJ_HEIGHT,   0]], dtype=np.float32)
 
 

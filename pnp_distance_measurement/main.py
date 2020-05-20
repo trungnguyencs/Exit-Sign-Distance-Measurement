@@ -57,14 +57,23 @@ class Processing(object):
 
     # Draw the projected vertices
     img = cv2.polylines(img, np.int32([quadrilateral.vertices_2D]),  
-                      isClosed=True, color=(0, 255, 0), thickness=2)
+                      isClosed=True, color=(0, 255, 255), thickness=3)
 
     # Draw the normal vector at the center of the quadrilateral
-    for i in [1,2,3]:
-      start_point = tuple(quadrilateral.projected_orthogonals[0])
-      end_point = tuple(quadrilateral.projected_orthogonals[i])
-      img = cv2.arrowedLine(img, start_point, end_point,  
-                        color=(255, 0, 0), thickness=1, tipLength=0.5)    
+    start_point = tuple(quadrilateral.projected_orthogonals[0])
+    end_point = tuple(quadrilateral.projected_orthogonals[1])
+    img = cv2.arrowedLine(img, start_point, end_point,  
+                      color=(255, 0, 0), thickness=3, tipLength=0.25)
+
+    start_point = tuple(quadrilateral.projected_orthogonals[0])
+    end_point = tuple(quadrilateral.projected_orthogonals[2])
+    img = cv2.arrowedLine(img, start_point, end_point,  
+                      color=(0, 0, 255), thickness=3, tipLength=0.25)
+
+    start_point = tuple(quadrilateral.projected_orthogonals[0])
+    end_point = tuple(quadrilateral.projected_orthogonals[3])
+    img = cv2.arrowedLine(img, start_point, end_point,  
+                      color=(255, 0, 255), thickness=3, tipLength=0.25)   
 
     # img = cv2.resize(img, (672, 504))
     # cv2.imshow(window_name, img)
