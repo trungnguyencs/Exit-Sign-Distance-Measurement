@@ -21,8 +21,7 @@ class Quadrilateral(object):
     self.distance = self.find_distance(self.T_vec)
     self.projected_vertices_2D = self.project_2D(self.R_vec, self.T_vec, conf.DEFAULT_VERTICES_3D)
     
-    self.projected_normal_vec = self.project_2D(self.R_vec, self.T_vec, conf.DEFAULT_NORMAL_VECTOR_3D)
-    self.projected_parallel_vertices_2D = self.project_2D(self.R_vec, self.T_vec, conf.PARALLEL_VERTICES_3D)
+    self.projected_orthogonals = self.project_2D(self.R_vec, self.T_vec, conf.DEFAULT_ORTHOGONALS_3D)
     
     self.x_err, self.y_err = self.find_projection_err(self.vertices_2D, self.projected_vertices_2D)
 

@@ -60,23 +60,18 @@ class Processing(object):
                       isClosed=True, color=(0, 255, 0), thickness=2)
 
     # Draw the normal vector at the center of the quadrilateral
-    start_point = tuple(quadrilateral.projected_normal_vec[0])
-    end_point = tuple(quadrilateral.projected_normal_vec[1])
-    img = cv2.arrowedLine(img, start_point, end_point,  
-                      color=(255, 0, 0), thickness=1, tipLength=0.5)
-
-    # Draw the normal vector ar each corner
-    for i in range(len(quadrilateral.projected_vertices_2D)):
-      start_point = tuple(quadrilateral.projected_vertices_2D[i])
-      end_point = tuple(quadrilateral.projected_parallel_vertices_2D[i])
+    for i in [1,2,3]:
+      start_point = tuple(quadrilateral.projected_orthogonals[0])
+      end_point = tuple(quadrilateral.projected_orthogonals[i])
       img = cv2.arrowedLine(img, start_point, end_point,  
-                        color=(255, 0, 0), thickness=1, tipLength=0.5)      
+                        color=(255, 0, 0), thickness=1, tipLength=0.5)    
 
-    img = cv2.resize(img, (672, 504))
-    cv2.imshow(window_name, img)
-    cv2.waitKey(1000)
-    cv2.destroyWindow(window_name)
-    # cv2.imwrite(conf.ARROW_IMG_PATH + 'arrow_' + quadrilateral.id, img)    
+    # img = cv2.resize(img, (672, 504))
+    # cv2.imshow(window_name, img)
+    # cv2.waitKey(1000)
+    # cv2.destroyWindow(window_name)
+    img_name = conf.ARROW_IMG_PATH + 'arrow_' + str(quadrilateral.distance)[:4] + '_' + quadrilateral.id
+    cv2.imwrite(img_name, img)    
 
   def write_to_json(self, arr, json_file_name):
     """
@@ -103,7 +98,7 @@ def main():
     # i = np.random.randint(0, len(quadrilateral_arr))
     quadrilateral = quadrilateral_arr[i]
     print(quadrilateral.id + ' ' + str(quadrilateral.distance))
-    # img = P.display_image(quadrilateral)
+    img = P.display_image(quadrilateral)
 
   print('***********************************************************************')
   print(len(quadrilateral_arr))
