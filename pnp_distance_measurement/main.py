@@ -15,10 +15,10 @@ class Processing(object):
         id = data[i]['External ID']
         try:
           pts = data[i]['Label'][conf.LABEL][0]['geometry']
-          p1 = Point(float(pts[0]['x']), float(pts[0]['y']))
-          p2 = Point(float(pts[1]['x']), float(pts[1]['y']))
-          p3 = Point(float(pts[2]['x']), float(pts[2]['y']))
-          p4 = Point(float(pts[3]['x']), float(pts[3]['y']))
+          p1 = Point(int(pts[0]['x']), int(pts[0]['y']))
+          p2 = Point(int(pts[1]['x']), int(pts[1]['y']))
+          p3 = Point(int(pts[2]['x']), int(pts[2]['y']))
+          p4 = Point(int(pts[3]['x']), int(pts[3]['y']))
           quadrilateral_arr.append(Quadrilateral(id, (p1, p2, p3, p4)))
         except:
           continue
@@ -43,8 +43,9 @@ class Processing(object):
     """
     err_x, err_y = 0, 0
     for quadrilateral in quadrilateral_arr:
-      err_x += quadrilateral.x_err
-      err_y += quadrilateral.y_err
+      x_err, y_err = quadrilateral.find_projection_err(quadrilateral.vertices_2D)
+      err_x += x_err
+      err_y += y_err
     return (err_x/len(quadrilateral_arr), err_y/len(quadrilateral_arr))
 
   def display_image(self, quadrilateral):
@@ -55,23 +56,25 @@ class Processing(object):
     img = cv2.imread(conf.IMG_PATH + quadrilateral.id)
     window_name = 'Image ' + quadrilateral.id + ', Distance: ' + str(quadrilateral.distance)
 
+    projected_orthogonals = quadrilateral.project_2D(quadrilateral.R_vec, quadrilateral.T_vec,\
+                                                     conf.DEFAULT_ORTHOGONALS_3D).tolist()
     # Draw the projected vertices
     img = cv2.polylines(img, np.int32([quadrilateral.vertices_2D]),  
                       isClosed=True, color=(0, 255, 255), thickness=3)
 
     # Draw the normal vector at the center of the quadrilateral
-    start_point = tuple(quadrilateral.projected_orthogonals[0])
-    end_point = tuple(quadrilateral.projected_orthogonals[1])
+    start_point = tuple(projected_orthogonals[0])
+    end_point = tuple(projected_orthogonals[1])
     img = cv2.arrowedLine(img, start_point, end_point,  
                       color=(255, 0, 0), thickness=3, tipLength=0.25)
 
-    start_point = tuple(quadrilateral.projected_orthogonals[0])
-    end_point = tuple(quadrilateral.projected_orthogonals[2])
+    start_point = tuple(projected_orthogonals[0])
+    end_point = tuple(projected_orthogonals[2])
     img = cv2.arrowedLine(img, start_point, end_point,  
                       color=(0, 0, 255), thickness=3, tipLength=0.25)
 
-    start_point = tuple(quadrilateral.projected_orthogonals[0])
-    end_point = tuple(quadrilateral.projected_orthogonals[3])
+    start_point = tuple(projected_orthogonals[0])
+    end_point = tuple(projected_orthogonals[3])
     img = cv2.arrowedLine(img, start_point, end_point,  
                       color=(255, 0, 255), thickness=3, tipLength=0.25)   
 
@@ -95,7 +98,7 @@ def main():
     data = json.load(f)
   P = Processing()
   quadrilateral_arr = P.create_quadrilateral_arr(data, conf.JSON_FLAG)
-  # P.write_to_json(quadrilateral_arr, conf.JSON_OUTPUT)
+  P.write_to_json(quadrilateral_arr, conf.JSON_OUTPUT)
 
   print('***********************************************************************')
   ave_x_err, ave_y_err = P.find_ave_proj_error(quadrilateral_arr)

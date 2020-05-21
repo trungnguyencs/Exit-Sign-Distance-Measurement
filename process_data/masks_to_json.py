@@ -2,7 +2,7 @@ import cv2, json
 import os, fnmatch
 import numpy as np
 
-MASK_PATH = '../data/groundtruth_exit_sign_cleaned/masks/'
+MASK_PATH = '../data/groundtruth_exit_sign_cleaned_830/masks/'
 JSON_OUTPUT = '../data/json/groundtruth-830.json'
 
 def get_file_list(path):
@@ -25,7 +25,7 @@ def extract_corner(img):
   dst = np.uint8(dst)
   ret, labels, stats, centroids = cv2.connectedComponentsWithStats(dst)
   criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.001)
-  corners = cv2.cornerSubPix(gray,np.float32(centroids),(5,5),(-1,-1),criteria)[1:]
+  corners = np.int32(cv2.cornerSubPix(gray,np.float32(centroids),(5,5),(-1,-1),criteria)[1:])
   # img[dst>0.1*dst.max()]=[0,0,255]
   return corners.tolist()
 

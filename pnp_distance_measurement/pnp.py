@@ -17,13 +17,11 @@ class Quadrilateral(object):
     self.id = id
     self.vertices_2D = [[A.x, A.y],[B.x,B.y],[C.x,C.y],[D.x,D.y]]
 
-    self.R_vec, self.T_vec = self.find_R_t(self.vertices_2D)
-    self.distance = self.find_distance(self.T_vec)
-    self.projected_vertices_2D = self.project_2D(self.R_vec, self.T_vec, conf.DEFAULT_VERTICES_3D)
-    
-    self.projected_orthogonals = self.project_2D(self.R_vec, self.T_vec, conf.DEFAULT_ORTHOGONALS_3D)
-    
-    self.x_err, self.y_err = self.find_projection_err(self.vertices_2D, self.projected_vertices_2D)
+    self.camera_mat = conf.K.tolist()
+    R_vec, T_vec = self.find_R_t(self.vertices_2D)
+    self.R_vec, self.T_vec = R_vec.tolist(), T_vec.tolist()
+    distance = self.find_distance(self.T_vec)
+    self.distance = np.asscalar(distance)
 
   def rearrange_pts(self, pts):
     """
@@ -66,14 +64,13 @@ class Quadrilateral(object):
     """
     pts_2D = np.array(pts_2D, dtype=np.float32)
     ret, R_vec, T_vec = cv2.solvePnP(conf.DEFAULT_VERTICES_3D, pts_2D, conf.K, conf.DIST_COEFFS)
-    return R_vec.tolist(), T_vec.tolist()
+    return R_vec, T_vec
 
   def find_distance(self, T_vec):
     """
     Calculate the distance to the exit sign as the magnitude of the traslational T_vector
     """
-    distance = np.sqrt(np.sum(np.array(T_vec) ** 2))
-    return np.asscalar(distance)
+    return np.sqrt(np.sum(np.array(T_vec) ** 2))
 
   def project_2D(self, R_vec, T_vec, pts_3D):
     """
@@ -81,15 +78,15 @@ class Quadrilateral(object):
     """
     pts_2D, jacobian = cv2.projectPoints(pts_3D, np.array(R_vec), np.array(T_vec), conf.K, conf.DIST_COEFFS)
     projected_vertices_2D = np.reshape(pts_2D, (-1,2))
-    return np.int32(projected_vertices_2D).tolist()
+    return np.int32(projected_vertices_2D)
 
-  def find_projection_err(self, vertices_2D, projected_vertices_2D):
+  def find_projection_err(self, vertices_2D):
     """
     Calculate the average error (in pixels) between the labeled vertices and the 
     projected vertices of a quadrilateral
     """
     vertices_2D = np.array(vertices_2D)
-    projected_vertices_2D = np.array(projected_vertices_2D)
+    projected_vertices_2D = self.project_2D(self.R_vec, self.T_vec, conf.DEFAULT_VERTICES_3D)  
     err = np.sum(np.abs(vertices_2D - projected_vertices_2D), axis=0)/len(vertices_2D)
     return err.tolist()
 

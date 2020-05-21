@@ -8,7 +8,7 @@ model = 'groundtruth_1920x1440_iPhone8'
 if model == 'groundtruth_1920x1440_iPhone8':
   # Groundthruth data set, img size 1920x1440
   JSON_INPUT = '../data/json/groundtruth-830.json'
-  JSON_OUTPUT = '../results/json/groundtruth-results-830.json'
+  JSON_OUTPUT = '../data/json/groundtruth-results-830.json'
   JSON_FLAG = 'from reading imgs'
   IMG_PATH = '../data/groundtruth_exit_sign_cleaned_830/imgs/'
   ARROW_IMG_PATH = '../results/arrow_imgs/groundtruth_exit_sign/'
@@ -23,7 +23,7 @@ if model == 'groundtruth_1920x1440_iPhone8':
 elif model == 'main_360x640':
   # Main data set, img size 360x640
   JSON_INPUT = '../data/json/quadrilateral-raw-1807.json'
-  JSON_OUTPUT = '../results/json/quadrilateral-results-1787.json'
+  JSON_OUTPUT = '../data/json/quadrilateral-results-1787.json'
   JSON_FLAG = 'from labelbox'
   IMG_PATH = '../data/exit_sign_1787/'
   ARROW_IMG_PATH = '../results/arrow_imgs/exit_sign/'
@@ -39,7 +39,7 @@ elif model == 'main_360x640':
 elif model == 'street_4032x3024_iPhone8s':
   # Street data set, iPhone 8s, img size 4032x3024
   JSON_INPUT = '../data/json/street-raw-4032x3024.json'
-  JSON_OUTPUT = '../results/json/street-results-4032x3024.json'
+  JSON_OUTPUT = '../data/json/street-results-4032x3024.json'
   JSON_FLAG = 'from labelbox'
   IMG_PATH = '../data/street_4032x3024/'
   ARROW_IMG_PATH = '../results/arrow_imgs/street_4032x3024/'  
@@ -56,7 +56,7 @@ elif model == 'street_4032x3024_iPhone8s':
 elif model == 'street_1008x756_iPhone8s':
   # Street data set, iPhone 8s, img resized 1008x756
   JSON_INPUT = '../data/json/street-raw-1008x756.json'
-  JSON_OUTPUT = '../results/json/street-results-1008x756.json'
+  JSON_OUTPUT = '../data/json/street-results-1008x756.json'
   JSON_FLAG = 'from labelbox'
   IMG_PATH = '../data/street_1008x756/'
   ARROW_IMG_PATH = '../results/arrow_imgs/street_1008x756/'
