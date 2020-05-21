@@ -1,6 +1,6 @@
 import numpy as np
 
-model = 'groundtruth_1920x1440_iPhone8'
+# model = 'groundtruth_1920x1440_iPhone8'
 # model = 'main_360x640'
 # model = 'street_4032x3024_iPhone8s'
 # model = 'street_1008x756_iPhone8s'
@@ -13,6 +13,7 @@ if model == 'groundtruth_1920x1440_iPhone8':
   IMG_PATH = '../data/groundtruth_exit_sign_cleaned_830/imgs/'
   ARROW_IMG_PATH = '../results/arrow_imgs/groundtruth_exit_sign/'
 
+  IMG_SIZE = [1920, 1440]
   OBJ_WIDTH = 0.335 # Sign width in meters 
   OBJ_HEIGHT = 0.195 # Sign height in meters
   K = np.array([[1602, 0,    1920//2], \
@@ -29,6 +30,7 @@ elif model == 'main_360x640':
   ARROW_IMG_PATH = '../results/arrow_imgs/exit_sign/'
   LABEL = 'EXIT_sign'
 
+  IMG_SIZE = [360, 640]
   OBJ_WIDTH = 0.335 # Sign width in meters 
   OBJ_HEIGHT = 0.195 # Sign height in meters
   K = np.array([[536,  0,    360//2], \
@@ -45,6 +47,7 @@ elif model == 'street_4032x3024_iPhone8s':
   ARROW_IMG_PATH = '../results/arrow_imgs/street_4032x3024/'  
   LABEL = 'rectangle'
 
+  IMG_SIZE = [4032, 3024]
   OBJ_WIDTH = 32.0 * 0.0254
   OBJ_HEIGHT = 19.0 * 0.0254
   K = np.array([[3280.1416389452497, 0.0,                2051.308838596682 ], \
@@ -62,6 +65,7 @@ elif model == 'street_1008x756_iPhone8s':
   ARROW_IMG_PATH = '../results/arrow_imgs/street_1008x756/'
   LABEL = 'rectangle'
 
+  IMG_SIZE = [1008, 756]
   OBJ_WIDTH = 32.0 * 0.0254
   OBJ_HEIGHT = 19.0 * 0.0254
   K = np.array([[819.7375674224452,  0.0,                512.6162509923176 ], \

@@ -16,6 +16,7 @@ class Quadrilateral(object):
     (A, B, C, D) = self.rearrange_pts(pts)
     self.id = id
     self.vertices_2D = [[A.x, A.y],[B.x,B.y],[C.x,C.y],[D.x,D.y]]
+    self.img_size = conf.IMG_SIZE
 
     self.camera_mat = conf.K.tolist()
     R_vec, T_vec = self.find_R_t(self.vertices_2D)
