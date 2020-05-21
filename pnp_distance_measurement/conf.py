@@ -10,7 +10,7 @@ if model == 'groundtruth_1920x1440_iPhone8':
   JSON_INPUT = '../data/json/groundtruth-830.json'
   JSON_OUTPUT = '../results/json/groundtruth-results-830.json'
   JSON_FLAG = 'from reading imgs'
-  IMG_PATH = '../data/groundtruth_exit_sign_cleaned/imgs/'
+  IMG_PATH = '../data/groundtruth_exit_sign_cleaned_830/imgs/'
   ARROW_IMG_PATH = '../results/arrow_imgs/groundtruth_exit_sign/'
 
   OBJ_WIDTH = 0.335 # Sign width in meters 
@@ -25,7 +25,7 @@ elif model == 'main_360x640':
   JSON_INPUT = '../data/json/quadrilateral-raw-1807.json'
   JSON_OUTPUT = '../results/json/quadrilateral-results-1787.json'
   JSON_FLAG = 'from labelbox'
-  IMG_PATH = '../data/exit_sign/'
+  IMG_PATH = '../data/exit_sign_1787/'
   ARROW_IMG_PATH = '../results/arrow_imgs/exit_sign/'
   LABEL = 'EXIT_sign'
 
