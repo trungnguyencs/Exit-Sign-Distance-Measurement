@@ -1,6 +1,6 @@
 import numpy as np
 
-# model = 'groundtruth_1920x1440_iPhone8'
+model = 'groundtruth_1920x1440_iPhone8'
 # model = 'main_360x640'
 # model = 'street_4032x3024_iPhone8s'
 # model = 'street_1008x756_iPhone8s'

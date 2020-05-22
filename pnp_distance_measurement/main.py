@@ -50,8 +50,7 @@ class Processing(object):
 
   def display_image(self, quadrilateral):
     """
-    Display the image, the projected-back exit sign and its 5 normal vectors 
-    (4 at 4 corners plus one at the center of the exit sign)
+    Display the image, the exit sign label boundaries and the normal Oxyz at the center of the exit sign
     """
     img = cv2.imread(conf.IMG_PATH + quadrilateral.id)
     window_name = 'Image ' + quadrilateral.id + ', Distance: ' + str(quadrilateral.distance)

@@ -21,8 +21,10 @@ class Quadrilateral(object):
     self.camera_mat = conf.K.tolist()
     R_vec, T_vec = self.find_R_t(self.vertices_2D)
     self.R_vec, self.T_vec = R_vec.tolist(), T_vec.tolist()
-    distance = self.find_distance(self.T_vec)
-    self.distance = np.asscalar(distance)
+    # distance = self.find_distance(self.T_vec)
+    # self.distance = np.asscalar(distance)
+    horizontal_distance = self.find_horizontal_distance(R_vec, T_vec)
+    self.distance = np.asscalar(horizontal_distance)
 
   def rearrange_pts(self, pts):
     """
@@ -72,6 +74,20 @@ class Quadrilateral(object):
     Calculate the distance to the exit sign as the magnitude of the traslational T_vector
     """
     return np.sqrt(np.sum(np.array(T_vec) ** 2))
+
+  def find_horizontal_distance(self, R_vec, T_vec):
+    """
+    Calculate the horizontal distance, which is the dot product of T_vec and 
+    the unit normal vector the sign (with respect to the camera reference system)
+    """
+    R_mat, jacobian = cv2.Rodrigues(R_vec)
+    X0_w = np.array([[0],[0],[0]], dtype=np.float32)
+    X1_w = np.array([[0],[0],[1]], dtype=np.float32)
+    X0_c = np.matmul(R_mat, np.subtract(X0_w, T_vec))
+    X1_c = np.matmul(R_mat, np.subtract(X1_w, T_vec))
+    normal_unit_vec_c = np.subtract(X1_c, X0_c)
+    horizontal_distance = np.dot(np.ravel(T_vec), np.ravel(normal_unit_vec_c))
+    return horizontal_distance
 
   def project_2D(self, R_vec, T_vec, pts_3D):
     """
