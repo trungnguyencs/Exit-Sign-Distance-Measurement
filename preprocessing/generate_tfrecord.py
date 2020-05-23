@@ -23,13 +23,13 @@ from object_detection.utils import dataset_util
 from collections import namedtuple, OrderedDict
 
 flags = tf.app.flags
-# flags.DEFINE_string('csv_input', '../data/csv/street-1008x756.csv', 'Path to the CSV input')
-# flags.DEFINE_string('output_path', '../data/tfrecord/street-1008x756.record', 'Path to output TFRecord')
-# flags.DEFINE_string('image_dir', '../data/street_1008x756/', 'Path to images')
+flags.DEFINE_string('csv_input', '../data/csv/street-1008x756.csv', 'Path to the CSV input')
+flags.DEFINE_string('output_path', '../data/tfrecord/street-1008x756.record', 'Path to output TFRecord')
+flags.DEFINE_string('image_dir', '../data/street_1008x756/', 'Path to images')
 
-flags.DEFINE_string('csv_input', '../data/csv/quadrilateral-train.csv', 'Path to the CSV input')
-flags.DEFINE_string('output_path', '../data/tfrecord/quadrilateral-train.record', 'Path to output TFRecord')
-flags.DEFINE_string('image_dir', '../data/exit_sign_1787/', 'Path to images')
+# flags.DEFINE_string('csv_input', '../data/csv/quadrilateral-train.csv', 'Path to the CSV input')
+# flags.DEFINE_string('output_path', '../data/tfrecord/quadrilateral-train.record', 'Path to output TFRecord')
+# flags.DEFINE_string('image_dir', '../data/exit_sign_1787/', 'Path to images')
 
 # flags.DEFINE_string('csv_input', '../data/csv/quadrilateral-test.csv', 'Path to the CSV input')
 # flags.DEFINE_string('output_path', '../data/tfrecord/quadrilateral-test.record', 'Path to output TFRecord')

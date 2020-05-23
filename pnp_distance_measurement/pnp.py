@@ -81,13 +81,24 @@ class Quadrilateral(object):
     the unit normal vector the sign (with respect to the camera reference system)
     """
     R_mat, jacobian = cv2.Rodrigues(R_vec)
-    X0_w = np.array([[0],[0],[0]], dtype=np.float32)
-    X1_w = np.array([[0],[0],[1]], dtype=np.float32)
-    X0_c = np.matmul(R_mat, np.subtract(X0_w, T_vec))
-    X1_c = np.matmul(R_mat, np.subtract(X1_w, T_vec))
-    normal_unit_vec_c = np.subtract(X1_c, X0_c)
-    horizontal_distance = np.dot(np.ravel(T_vec), np.ravel(normal_unit_vec_c))
+    normal_vec_w = np.array([[0],[0],[1]], dtype=np.float32)
+    normal_vec_c = np.matmul(R_mat, normal_vec_w)
+    horizontal_distance = -np.dot(np.ravel(T_vec), np.ravel(normal_vec_c))
     return horizontal_distance
+
+  # def find_horizontal_distance(self, R_vec, T_vec):
+  #   """
+  #   Calculate the horizontal distance, which is the dot product of T_vec and 
+  #   the unit normal vector the sign (with respect to the camera reference system)
+  #   """
+  #   R_mat, jacobian = cv2.Rodrigues(R_vec)
+  #   X0_w = np.array([[0],[0],[0]], dtype=np.float32)
+  #   X1_w = np.array([[0],[0],[1]], dtype=np.float32)
+  #   X0_c = np.matmul(R_mat, np.add(X0_w, T_vec))
+  #   X1_c = np.matmul(R_mat, np.add(X1_w, T_vec))
+  #   normal_unit_vec_c = np.subtract(X0_c, X1_c)
+  #   horizontal_distance = np.dot(np.ravel(T_vec), np.ravel(normal_unit_vec_c))
+  #   return horizontal_distance
 
   def project_2D(self, R_vec, T_vec, pts_3D):
     """

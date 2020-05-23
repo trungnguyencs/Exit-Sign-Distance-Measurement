@@ -74,11 +74,11 @@ elif model == 'street_1008x756_iPhone8s':
   DIST_COEFFS = np.array([0.3625525153631118, -3.2679279813000974, -0.0021839532687696257, \
                           0.005111306480977345, 9.299685322344486], dtype=np.float32)
 
-DEFAULT_VERTICES_3D = np.array([[0,         0,          0], [OBJ_WIDTH, 0,          0], \
-                                [OBJ_WIDTH, OBJ_HEIGHT, 0], [0,         OBJ_HEIGHT, 0]], dtype=np.float32)
-DEFAULT_ORTHOGONALS_3D = np.array([[OBJ_WIDTH/2, OBJ_HEIGHT/2, 0         ],\
-                                   [OBJ_WIDTH/2, OBJ_HEIGHT/2, OBJ_WIDTH ],\
-                                   [OBJ_WIDTH/2+OBJ_HEIGHT/2,  OBJ_HEIGHT/2, 0],\
-                                   [OBJ_WIDTH/2, OBJ_HEIGHT,   0]], dtype=np.float32)
+DEFAULT_VERTICES_3D = np.array([[-OBJ_WIDTH/2, OBJ_HEIGHT/2, 0], [OBJ_WIDTH/2, OBJ_HEIGHT/2, 0], \
+                                [OBJ_WIDTH/2, -OBJ_HEIGHT/2, 0], [-OBJ_WIDTH/2, -OBJ_HEIGHT/2, 0]], dtype=np.float32)
+DEFAULT_ORTHOGONALS_3D = np.array([[0, 0, 0],\
+                                   [0, 0, OBJ_HEIGHT/2],\
+                                   [OBJ_HEIGHT/2, 0, 0],\
+                                   [0, OBJ_HEIGHT/2, 0]], dtype=np.float32)
 
 
