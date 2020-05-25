@@ -1,6 +1,8 @@
 .gitattributes
 *.pyc
 *.record
+*.gz
+TensorFlow
 tensorflow
 tflite
 models-master
