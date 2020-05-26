@@ -2,8 +2,4 @@
 *.pyc
 *.record
 *.gz
-TensorFlow
-tensorflow
-tflite
-models-master
 .ipynb_checkpoints
