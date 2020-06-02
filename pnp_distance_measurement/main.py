@@ -97,7 +97,7 @@ def main():
     data = json.load(f)
   P = Processing()
   quadrilateral_arr = P.create_quadrilateral_arr(data, conf.JSON_FLAG)
-  P.write_to_json(quadrilateral_arr, conf.JSON_OUTPUT)
+  # P.write_to_json(quadrilateral_arr, conf.JSON_OUTPUT)
 
   print('***********************************************************************')
   ave_x_err, ave_y_err = P.find_ave_proj_error(quadrilateral_arr)
