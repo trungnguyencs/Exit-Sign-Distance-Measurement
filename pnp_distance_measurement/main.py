@@ -32,9 +32,24 @@ class Processing(object):
         p2 = Point(pts[1][0], pts[1][1])
         p3 = Point(pts[2][0], pts[2][1])
         p4 = Point(pts[3][0], pts[3][1])
-        quadrilateral_arr.append(Quadrilateral(id, (p1, p2, p3, p4)))
+        obj = Quadrilateral(id, (p1, p2, p3, p4))
+        obj.real_distance = int(data[i]['img_id'][0])
+        quadrilateral_arr.append(obj)
 
     return quadrilateral_arr
+
+  def find_distance_error(self, quadrilateral_arr):
+    """
+    Calulate the average pixel differences in x and y directions between
+    the labels and the projected images
+    """
+    err = [0]*10
+    count = [0]*10
+    for quadrilateral in quadrilateral_arr:
+      err[quadrilateral.real_distance] += abs(quadrilateral.distance - quadrilateral.real_distance)
+      count[quadrilateral.real_distance] += 1
+    ave_err = [err[i]/count[i] for i in range(2,10)]
+    return ave_err
 
   def find_ave_proj_error(self, quadrilateral_arr):
     """
@@ -109,10 +124,13 @@ def main():
     # i = np.random.randint(0, len(quadrilateral_arr))
     quadrilateral = quadrilateral_arr[i]
     print(quadrilateral.id + ' ' + str(quadrilateral.distance))
-    img = P.display_image(quadrilateral)
+    # img = P.display_image(quadrilateral)
 
   print('***********************************************************************')
   print(len(quadrilateral_arr))
+  print('***********************************************************************')
+  if conf.model == 'groundtruth_1920x1440_iPhone8':
+    print('Average error by distance (2-9m): ' + str(P.find_distance_error(quadrilateral_arr)))
   
 if __name__== "__main__":
   main()
