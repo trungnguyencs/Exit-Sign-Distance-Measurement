@@ -49,7 +49,14 @@ class Processing(object):
       err[quadrilateral.real_distance] += abs(quadrilateral.distance - quadrilateral.real_distance)
       count[quadrilateral.real_distance] += 1
     ave_err = [err[i]/count[i] for i in range(2,10)]
-    return ave_err
+    err_percentage = [err[i]/count[i]/i for i in range(2,10)]
+
+    print('Image count per distance:')
+    print(count)
+    print('Ave error per distance:')
+    print(ave_err)
+    print('Error percentage:')
+    print(err_percentage)
 
   def find_ave_proj_error(self, quadrilateral_arr):
     """
@@ -130,7 +137,7 @@ def main():
   print(len(quadrilateral_arr))
   print('***********************************************************************')
   if conf.model == 'groundtruth_1920x1440_iPhone8':
-    print('Average error by distance (2-9m): ' + str(P.find_distance_error(quadrilateral_arr)))
+    P.find_distance_error(quadrilateral_arr)
   
 if __name__== "__main__":
   main()
