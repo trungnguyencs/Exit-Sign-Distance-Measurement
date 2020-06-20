@@ -10,7 +10,7 @@ This program calculates the distance from a camera to an exit sign in real-life,
 This program serves two purposes. First, this distance estimation model placed on top of a deep learning model, which assuming can accurately segment the four corners of the sign automatically, would be able to calculate the distance from the exit sign to the camera. Second, this distance estimation model works as a “labeler”: given a large dataset of exit sign images, with this model, we can obtain the exit sign distance from each image and feed it into a deep learning model that detects exit signs and predicts its distance from regression learning.
 
 # Requirements
-* Python 2.7
+Requires Python 2.7 and the following python libraries:
 * numpy
 * cv2
 * json
@@ -118,7 +118,6 @@ This program serves two purposes. First, this distance estimation model placed o
 * `results/arrow_imgs`: contains images with the exit sign label boundaries and the normal Oxyz at the center of the exit sign
 
 # Run the code
-In the directory `pnp_distance_measurement`, open `config.py`, choose one of the 4 dataset by uncommenting it, and leave the other 3 commented
-
-Run `python main.py` in your Terminal
+* In the directory `pnp_distance_measurement`, open `config.py`, choose one of the 4 dataset by uncommenting it, and leave the other 3 lines commented
+* Run `python main.py` in your Terminal
 
