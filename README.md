@@ -20,7 +20,7 @@ This project serves two purposes. First, this distance estimation model placed o
 * glob
 * yaml
 
-# Repo directory structure
+# Directory structure
 
 ```
 ├── README.md
@@ -76,14 +76,13 @@ This project serves two purposes. First, this distance estimation model placed o
 
 # Program structure
 
-My program was broken down into the following functions:
-* `get_file_path()`: Get input and output files. Notify an error if either not enough arguments are entered or cannot open input file
+* `calib`: contain `calib.py` which takes 
+
 * `extract_info(line)`: Get `drug_name`, `cost`, and `pres_name` from each line of the txt file
 * `sum_total_cost(pres_name, drug_name, cost, drug_dict)`: Construct the dictionary `drug_dict` and the inner dictionary `pres_dict` 
 * `sort_drug(drug_dict)`: Order the dictionary by `drug_name` and `total_cost`
 * `cost_name_compare(drug1, drug2)`: helper function for `sort_drug`, compares 2 drugs by total_cost, if they have equal total_cost then compare their drug_name. `drug1` is "smaller" than `drug2` if it has a larger total_cost, or if their costs are equal and drug1 has a earlier dictionary name order
 * `main()`: Call `get_file_path()` so get the txt file contents, then scans through each line. For each line it processes the string to obtain the `prescriber_last_name`, `prescriber_first_name`, `drug_name` and `drug_cost` information and print "Line is corrupt" if it can't get one or more fields. Then it calls `sum_total_cost()` to construct the dict and `ord_cost()` to sort it. Finally it writes the output to output txt file.
-
 
 # Approach
 
@@ -102,10 +101,5 @@ The time complexity for this block is `O(klog(k))`, where `k` is the number of d
 
 # Run the code
 
-Either type `run.sh` or `python3 ./src/medicine_count.py ./input/itcont.txt ./output/top_cost_drug.txt` in your Terminal
-
-
-
-# Contact
-trung.n@ucsc.edu
+Run `python main.py` in your Terminal
 
