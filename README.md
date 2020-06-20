@@ -90,12 +90,12 @@ This project serves two purposes. First, this distance estimation model placed o
     * `project_2D()`: Project the 3D exit sign coodinates back to 2D given the computed Extrinsic vectors
     * `find_projection_err()`: Calculate the average error (in pixels) between the labeled vertices and the projected vertices of a quadrilateral
 
-* `conf.py`: contains configurations for input and output paths, camera matrix, distortion coefficients
-  There are 4 different input options in `conf.py`:
+* `conf.py`: contains configurations for input and output paths, camera matrix, distortion coefficients. There are 4 different input options in `conf.py`:
     * `main_360x640`: Main exit sign dataset with 1787 images (details in Data)
     * `groundtruth_1920x1440_iPhone8`: The smaller exit sign dataset with 830 images (details in Data)
     * `street_4032x3024_iPhone8s`: 15 image dataset, used to verify the accuracy of the distance measurement implementation (details in Data)
     * `street_1008x756_iPhone8s`: the same dataset as the `street_4032x3024`, but images' size reduced to w/4 and h/4
+    
   You can choose the input option + its parameters by uncommenting the line of code containing its name in the beginning of the file (line 3-6), and leaving the other 3 commented
 
 ## Data
