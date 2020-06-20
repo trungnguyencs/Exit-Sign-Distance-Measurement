@@ -91,11 +91,12 @@ This project serves two purposes. First, this distance estimation model placed o
     * `find_projection_err()`: Calculate the average error (in pixels) between the labeled vertices and the projected vertices of a quadrilateral
 
 * `conf.py`: contains configurations for input and output paths, camera matrix, distortion coefficients
-    There are 4 different input options in `conf.py`:
-    * `main_360x640`: Main exit sign dataset with 1787 images
-    * `groundtruth_1920x1440_iPhone8`: The smaller exit sign dataset with 830 images
-    * `street_4032x3024_iPhone8s`:
-    * `street_1008x756_iPhone8s`:
+  There are 4 different input options in `conf.py`:
+    * `main_360x640`: Main exit sign dataset with 1787 images (details in Data)
+    * `groundtruth_1920x1440_iPhone8`: The smaller exit sign dataset with 830 images (details in Data)
+    * `street_4032x3024_iPhone8s`: 15 image dataset, used to verify the accuracy of the distance measurement implementation (details in Data)
+    * `street_1008x756_iPhone8s`: the same dataset as the `street_4032x3024`, but images' size reduced to w/4 and h/4
+  You can choose the input option + its parameters by uncommenting the line of code containing its name in the beginning of the file (line 3-6), and leaving the other 3 commented
 
 ## Data
 * `exit_sign_1787`: main dataset, provided by the Smith-Kettlewell Eye Research Institute. It contains 1787 images taken indoors, each contains at least one exit sign. The exit signs were intentionally taken at different distances with different poses and lighting conditions so that there are enough noises and variations. Each image has a height of 640 pixels and width 360 pixels, with a focal length provided as 536 pixels
@@ -104,7 +105,7 @@ This project serves two purposes. First, this distance estimation model placed o
 * `street_4032x3024`: dataset created by me, containing 15 images of a white board whose width is 32 inches (81.28 cm) and height is 19 inches (48.26 cm). This dataset was used to verify the accuracy of my distance measurement implementation
 * `street_1008x756`: the same dataset as the `street_4032x3024`, but images' size reduced to w/4 and h/4
 * `json`: json data for the above datasets. 
-* `csv`: csv data for the above datasets. These csv files were created for the sole purpose of making .record input files for the Tensorflow Object Detection Model in my subsequent project: Exit-Sign-Detector
+* `csv`: csv data for the above datasets. These csv files were created for the sole purpose of making `.record` input files for the Tensorflow Object Detection Model in my subsequent project: Exit-Sign-Detector
 
 ## Other folders:
 * `calib`: contains `calib.py` which takes checkerboard images taken at different angles as input and output the camera intrinsic matrix and distortion coefficients
