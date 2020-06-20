@@ -79,9 +79,14 @@ This project serves two purposes. First, this distance estimation model placed o
 
 # Program structure
 ## Main files
-* `main.py`: 
-    * 
-* `pnp.py`: python script responsible for:
+* `main.py`: run file, also contains some helper functions:
+    * `create_quadrilateral_arr()`: read json input and extract the 4 labeled corner coordinates and the real distance (for the groundtruth dataset containing 830 exit sign images). Convert the extracted information of all the points to an array of quadrilateral objects, with attributes defined in `pnp.py`
+    * `find_distance_error()`: (Applicable for the groundtruth dataset containing 830 exit sign images only) Calulate the average error of the calculated distance comparing with the real distance
+    * `find_ave_proj_error()`: Calulate the average pixel differences in x and y directions between the labels and the projected images
+    * `display_image()`: Display the image, the exit sign label boundaries and the normal Oxyz at the center of the exit sign
+    * `write_to_json()`: Write the quadrilateral array to a json output file
+
+* `pnp.py`: library containing:
     * `rearrange_pts()`: Rearrange 4 corner points to the correct order for matching
     * `rotate_vertical_quadrilateral()`: Rotate the quadrilateral 90 degrees in case it's vertical for correct matching
     * `find_R_t()`: Find R vector and T vector from input 2D image points using PNP algorithm
@@ -91,13 +96,15 @@ This project serves two purposes. First, this distance estimation model placed o
 
 * `conf.py`: contains configurations for input and output paths, camera matrix, distortion coefficients
     There are 4 different input options in `conf.py`:
-    * `groundtruth_1920x1440_iPhone8`:
-    * `main_360x640`:
+    * `main_360x640`: Main exit sign dataset with 1787 images
+    * `groundtruth_1920x1440_iPhone8`: The smaller exit sign dataset with 830 images
     * `street_4032x3024_iPhone8s`:
     * `street_1008x756_iPhone8s`:
 
+## Data
 
-* `calib`: contains `calib.py` which calibrates  takes images of 
+## Other folders:
+* `calib`: contains `calib.py` which takes checkerboard images taken at different angles as input and output the camera intrinsic matrix and distortion coefficients
 
 * `extract_info(line)`: Get `drug_name`, `cost`, and `pres_name` from each line of the txt file
 * `sum_total_cost(pres_name, drug_name, cost, drug_dict)`: Construct the dictionary `drug_dict` and the inner dictionary `pres_dict` 
