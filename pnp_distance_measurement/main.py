@@ -40,8 +40,8 @@ class Processing(object):
 
   def find_distance_error(self, quadrilateral_arr):
     """
-    Calulate the average pixel differences in x and y directions between
-    the labels and the projected images
+    (Applicable for the groundtruth dataset containing 830 exit sign images only)
+    Calulate the average error of the calculated distance comparing with the real distance
     """
     err = [0]*10
     count = [0]*10
