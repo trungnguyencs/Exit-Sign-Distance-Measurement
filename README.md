@@ -18,7 +18,6 @@ This project serves two purposes. First, this distance estimation model placed o
 * yaml
 
 # Directory structure
-
 ```
 ├── README.md
 ├── data
@@ -73,6 +72,7 @@ This project serves two purposes. First, this distance estimation model placed o
         ├── street_1008x756
         └── street_4032x3024
 ```
+
 # Program structure
 ## Main files
 * `main.py`: run file, also contains some helper functions:
@@ -98,9 +98,19 @@ This project serves two purposes. First, this distance estimation model placed o
     * `street_1008x756_iPhone8s`:
 
 ## Data
+* `exit_sign_1787`: main dataset, provided by the Smith-Kettlewell Eye Research Institute. It contains 1787 images taken indoors, each contains at least one exit sign. The exit signs were intentionally taken at different distances with different poses and lighting conditions so that there are enough noises and variations. Each image has a height of 640 pixels and width 360 pixels, with a focal length provided as 536 pixels
+* `groundtruth_exit_sign`: dataset of 830 images along with the manually measured distance from the sign in the image to the camera. Each image in this dataset has a height of 1920 pixels and width of 1440 pixels, and a focal length provided as 1602 pixels
+* `groundtruth_exit_sign_cleaned_830`: the same groundtruth dataset, but cleaned (flattened) for processing
+* `street_4032x3024`: dataset created by me, containing 15 images of a white board whose width is 32 inches (81.28 cm) and height is 19 inches (48.26 cm). This dataset was used to verify the accuracy of my distance measurement implementation
+* `street_1008x756`: the same dataset as the `street_4032x3024`, but images' size reduced to w/4 and h/4
+* `json`: json data for the above datasets. 
+* `csv`: csv data for the above datasets. These csv files were created for the sole purpose of making .record input files for the Tensorflow Object Detection Model in my subsequent project: Exit-Sign-Detector
 
 ## Other folders:
 * `calib`: contains `calib.py` which takes checkerboard images taken at different angles as input and output the camera intrinsic matrix and distortion coefficients
+* `resize`: contains script `resize.py` to resize all images in a directory
+* `preprocessing`: 
+* `results/arrow_imgs`: contains images with the exit sign label boundaries and the normal Oxyz at the center of the exit sign
 
 # Run the code
 Run `python main.py` in your Terminal
