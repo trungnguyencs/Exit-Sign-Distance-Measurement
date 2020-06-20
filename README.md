@@ -76,7 +76,7 @@ This program serves two purposes. First, this distance estimation model placed o
 # Program structure
 ## Main files
 * `main.py`: run file, also contains some helper functions:
-    * `create_quadrilateral_arr()`: read json input and extract the 4 labeled corner coordinates and the real distance (for the groundtruth dataset containing 830 exit sign images). Convert the extracted information of all the points to an array of quadrilateral objects, with attributes defined in `pnp.py`
+    * `create_quadrilateral_arr()`: read json input and extract the 4 labeled corner coordinates and the real distance (for the groundtruth dataset containing 830 exit sign images). Convert the extracted information of all the points to an array of quadrilateral objects whose attributes defined in `pnp.py`
     * `find_distance_error()`: (Applicable for the groundtruth dataset containing 830 exit sign images only) Calulate the average error of the calculated distance comparing with the real distance
     * `find_ave_proj_error()`: Calulate the average pixel differences in x and y directions between the labels and the projected images
     * `display_image()`: Display the image, the exit sign label boundaries and the normal Oxyz at the center of the exit sign
@@ -112,9 +112,13 @@ This program serves two purposes. First, this distance estimation model placed o
 * `resize`: contains script `resize.py` to resize all images in a directory
 * `preprocessing` (not important as only required to run once to get the data to the right format): contains the following processing scripts:
     * `download_data.py`: for downloading the main 1787 image dataset as I did not have direct access to the images and had to use this script to download them from the google drive URLs given in the `quadrilateral-raw-1807.json`
-    * `
+    * `read_groundthruth.py`: script to make `groundtruth_exit_sign_cleaned_830` dataset by removing hierarchical structute of `groundtruth_exit_sign` dataset
+    * `masks_to_json.py`: script to extract the 4 corner coordinates from each mask photo (using Harris corner detector) of the 830 image dataset and write them to json file
+    * `json_to_csv.py`: script to convert json data files to csv format and write them to `data` directory. These csv files were created for the sole purpose of making `.record` input files for the Tensorflow Object Detection Model in my subsequent project: Exit-Sign-Detector
 * `results/arrow_imgs`: contains images with the exit sign label boundaries and the normal Oxyz at the center of the exit sign
 
 # Run the code
+In the directory `pnp_distance_measurement`, open `config.py`, choose one of the 4 dataset by uncommenting it, and leave the other 3 commented
+
 Run `python main.py` in your Terminal
 
