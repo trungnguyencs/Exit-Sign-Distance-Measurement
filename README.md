@@ -5,7 +5,7 @@
 1. [Run the code](README.md#run-the-code)
 
 # Introduction
-This program calculates the distance from a camera to an exit sign in real-life, given the image containing the exit taken by the camera and coordinates of its four corners, together with the sign dimensions and the camera intrinsic parameters.
+This program calculates the distance from a camera to an exit sign in real-life, given the image containing the exit sign taken by the camera and coordinates of its four corners, together with the sign dimensions and the camera intrinsic parameters.
 
 This program serves two purposes. First, this distance estimation model placed on top of a deep learning model, which assuming can accurately segment the four corners of the sign automatically, would be able to calculate the distance from the exit sign to the camera. Second, this distance estimation model works as a “labeler”: given a large dataset of exit sign images, with this model, we can obtain the exit sign distance from each image and feed it into a deep learning model that detects exit signs and predicts its distance from regression learning.
 
