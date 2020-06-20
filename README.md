@@ -53,7 +53,10 @@ This project serves two purposes. First, this distance estimation model placed o
 │   │   ├── calib.py
 │   │   ├── calib_imgs_1008x756
 │   │   ├── calib_imgs_4032x3024
-│   │   └── calib_results_1008x756
+│   │   ├── calib_results_1008x756
+│   │   ├── calib_results_4032x3024
+│   │   ├── calibration_matrix_1008×756.yaml
+│   │   └── calibration_matrix_4032x3024.yaml
 │   ├── conf.py
 │   ├── main.py
 │   ├── pnp.py
@@ -75,8 +78,26 @@ This project serves two purposes. First, this distance estimation model placed o
 ```
 
 # Program structure
+## Main files
+* `main.py`: 
+    * 
+* `pnp.py`: python script responsible for:
+    * `rearrange_pts()`: Rearrange 4 corner points to the correct order for matching
+    * `rotate_vertical_quadrilateral()`: Rotate the quadrilateral 90 degrees in case it's vertical for correct matching
+    * `find_R_t()`: Find R vector and T vector from input 2D image points using PNP algorithm
+    * `find_horizontal_distance()`: Calculate the horizontal distance, which is the dot product of T_vec and the unit normal vector of the sign (with respect to the camera reference system)
+    * `project_2D()`: Project the 3D exit sign coodinates back to 2D given the computed Extrinsic vectors
+    * `find_projection_err()`: Calculate the average error (in pixels) between the labeled vertices and the projected vertices of a quadrilateral
 
-* `calib`: contain `calib.py` which takes 
+* `conf.py`: contains configurations for input and output paths, camera matrix, distortion coefficients
+    There are 4 different input options in `conf.py`:
+    * `groundtruth_1920x1440_iPhone8`:
+    * `main_360x640`:
+    * `street_4032x3024_iPhone8s`:
+    * `street_1008x756_iPhone8s`:
+
+
+* `calib`: contains `calib.py` which calibrates  takes images of 
 
 * `extract_info(line)`: Get `drug_name`, `cost`, and `pres_name` from each line of the txt file
 * `sum_total_cost(pres_name, drug_name, cost, drug_dict)`: Construct the dictionary `drug_dict` and the inner dictionary `pres_dict` 

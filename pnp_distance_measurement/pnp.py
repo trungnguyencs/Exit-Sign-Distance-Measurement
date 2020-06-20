@@ -78,7 +78,7 @@ class Quadrilateral(object):
   def find_horizontal_distance(self, R_vec, T_vec):
     """
     Calculate the horizontal distance, which is the dot product of T_vec and 
-    the unit normal vector the sign (with respect to the camera reference system)
+    the unit normal vector of the sign (with respect to the camera reference system)
     """
     R_mat, jacobian = cv2.Rodrigues(R_vec)
     normal_vec_w = np.array([[0],[0],[1]], dtype=np.float32)
